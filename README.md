@@ -4,20 +4,6 @@
 
 ### 一套以《碧蓝幻想Relink》飞空艇航行日志为视觉主题的 SilverBullet 主题、Dashboard 与 Widget 系统
 
-```text
-          .          ✦          .
-     ┌──────────────────────────────┐
-     │        SKY JOURNAL SYSTEM    │
-     │     RELINK FLIGHT ACTIVE     │
-     ├──────────────────────────────┤
-     │  THEME   WIDGETS   CONFIG    │
-     │  PAGES   MOBILE    PWA       │
-     └──────────────────────────────┘
-            \      |      /
-         ----      ✦      ----
-            /      |      \
-```
-
 ![SilverBullet](https://img.shields.io/badge/SilverBullet-Theme%20System-4f82b8)
 ![Space Lua](https://img.shields.io/badge/Space%20Lua-Widgets-6c87a7)
 ![Responsive](https://img.shields.io/badge/Responsive-Desktop%20%2F%20Mobile-d8b66b)
