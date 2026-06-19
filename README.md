@@ -30,7 +30,6 @@
 
 项目整体采用清爽的蓝、白、金配色，将 SilverBullet Space 组织为一套带有飞空艇仪表盘、航行日志与任务控制中心氛围的个人知识系统。
 
-> [!NOTE]
 > 部分 Markdown 元素排版、卡片视觉语言与细节处理参考了 **Phycat**，一个 Typora 主题。  
 > Sky Journal 在此基础上针对 SilverBullet 的 CodeMirror 编辑器、DOM 结构、Space Style、Space Lua、Dashboard 和移动端交互进行了重新设计与适配。
 
