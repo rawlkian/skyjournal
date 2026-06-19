@@ -37,13 +37,10 @@
 
 ## 🖼️ 预览
 
-建议在仓库中创建以下目录并替换为实际截图：
-
 ![Dashboard Light](docs/images/dashboard-light.png)
 ![Dashboard Dark](docs/images/dashboard-dark.png)
 ![Section Page](docs/images/section-page.png)
 ![Mobile](docs/images/mobile.png)
-
 
 ---
 
