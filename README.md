@@ -1,5 +1,3 @@
-<div align="center">
-
 # ✦ Sky Journal for SilverBullet ✦
 
 ### 一套以《碧蓝幻想Relink》飞空艇航行日志为视觉主题的 SilverBullet 主题、Dashboard 与 Widget 系统
@@ -174,9 +172,6 @@ System: Reload
 本项目部分 Markdown 样式参考开源主题 Phycat，原设计相关版权归其原作者所有。
 
 ---
-
-<div align="center">
-
 ```text
 ✦ SKY JOURNAL · RELINK FLIGHT SYSTEM ACTIVE ✦
 ```
