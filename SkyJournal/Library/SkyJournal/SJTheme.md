@@ -1,6 +1,6 @@
 # ✦ SKY JOURNAL GLOBAL THEME ✦
 
-> **版本：v1.8.63**  
+> **版本：v1.8.78**  
 > White / Azure / Gold · Deep Navy / Azure / Gold
 
 ```text
@@ -56,7 +56,7 @@ SkyJournal 是一款以"碧蓝幻想Relink"作为主设计概念的 SilverBullet
 /* priority: 20 */
 
 /* =========================================================
-   SKY JOURNAL GLOBAL THEME v1.8.63 UNIFIED NATIVE HASHTAGS
+   SKY JOURNAL GLOBAL THEME v1.8.78 SEAMLESS IVORY ASTRAL QUOTE EDITION
    White / Azure / Gold · Deep Navy / Azure / Gold
    ========================================================= */
 
@@ -10431,4 +10431,4527 @@ sjSystemChrome.install()
 │  THEME INDEX · SYNCHRONIZED        │
 ╰────────────────────────────────────╯
 by Rawlkian
+```
+
+
+## 🩹 26｜v1.8.67 标题外观兼容坐标修复
+
+保留原 H1–H6 的字体、尺寸、装饰、蓝金标题牌、圆角、下划线、左侧路线标记和悬停动画，
+仅将会破坏 CodeMirror 行高映射的垂直 `margin` 替换为透明上下边框。
+
+透明边框属于标题行自身的几何高度，CodeMirror 能正确测量；可见标题区域仍由原来的 padding、背景和伪元素绘制，
+因此不会像上一版那样把标题背景、装饰线和悬停区域一起撑大。
+
+```space-style
+/* priority: -120 */
+
+/* =========================================================
+   v1.8.67 HEADING APPEARANCE-SAFE GEOMETRY FIX
+
+   原则：
+   1. 编辑态真实标题行不使用 margin-block；
+   2. 用透明 border-block 提供相同的上下留白；
+   3. H2 的可见蓝金标题牌由 ::before 单独绘制，避免背景
+      延伸进透明边框；
+   4. 保留原字体、尺寸、圆角、装饰和 hover 动效。
+   ========================================================= */
+
+/* ---------- 所有编辑态标题：移除会破坏坐标映射的垂直 margin ---------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line:is(
+  .sb-line-h1,
+  .sb-line-h2,
+  .sb-line-h3,
+  .sb-line-h4,
+  .sb-line-h5,
+  .sb-line-h6
+) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ---------- H1：保留居中标题、短下划线与原 hover ---------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-line-h1 {
+  border-top: 1.35em solid transparent !important;
+  border-right: 0 solid transparent !important;
+  border-bottom: .9em solid transparent !important;
+  border-left: 0 solid transparent !important;
+}
+
+/* ---------- H2：透明边框负责间距，伪元素负责原蓝金标题牌 ---------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-line-h2 {
+  position: relative !important;
+  isolation: isolate;
+
+  border-top: 1.2em solid transparent !important;
+  border-right: 0 solid transparent !important;
+  border-bottom: .78em solid transparent !important;
+  border-left: 0 solid transparent !important;
+
+  /* 背景和阴影移到 ::before，避免绘制到透明边框区域。 */
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-line-h2::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+
+  border-radius: 9px !important;
+  background: var(--sj-heading-h2-background) !important;
+  background-size: 200% auto !important;
+  background-position: 0 center !important;
+  box-shadow: 0 4px 12px rgba(61, 116, 166, .12) !important;
+
+  transform: none;
+  transition:
+    background-position .42s ease,
+    box-shadow .26s ease;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-line-h2:hover {
+  /* 保留原来的轻微缩放，只禁止外层透明盒产生错误阴影。 */
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-line-h2:hover::before {
+  background-position: 100% center !important;
+  box-shadow: 0 8px 20px rgba(61, 116, 166, .20) !important;
+}
+
+/* ---------- H3：保留左侧竖向路线标记与 hover 缩进 ---------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-line-h3 {
+  border-top: 1.15em solid transparent !important;
+  border-right: 0 solid transparent !important;
+  border-bottom: .68em solid transparent !important;
+  border-left: 0 solid transparent !important;
+}
+
+/* ---------- H4–H6：保留圆点／短线路线标记与原 hover ---------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-line-h4 {
+  border-top: 1.05em solid transparent !important;
+  border-right: 0 solid transparent !important;
+  border-bottom: .58em solid transparent !important;
+  border-left: 0 solid transparent !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line:is(.sb-line-h5, .sb-line-h6) {
+  border-top: 1em solid transparent !important;
+  border-right: 0 solid transparent !important;
+  border-bottom: .55em solid transparent !important;
+  border-left: 0 solid transparent !important;
+}
+```
+
+## 🛡️ 27｜v1.8.68 CodeMirror 全局几何安全修复
+
+在不改变 Sky Journal 蓝白金／深海蓝金视觉语言的前提下，系统修复其他会影响
+CodeMirror 点击、拖选与光标定位的编辑态样式：
+
+- 引用块首尾垂直 margin 与相邻行负 margin；
+- Markdown 分割线的超大垂直 margin；
+- fenced code opening／closing 行的垂直 margin；
+- Frontmatter 首尾 margin、相邻行负 margin 与 CSS `display:none` 折叠；
+- TOC 根 Widget 的垂直 margin；
+- 直接作用于真实标题行的 hover 位移／缩放；
+- 行内代码外部 margin。
+
+可见卡片、圆角、渐变、边框、星标、代码块交通灯、Frontmatter 徽章与标题装饰均保留；
+所有段前段后空间改为 CodeMirror 能准确测量的内部几何或透明边框。
+
+```space-style
+/* priority: -140 */
+
+/* =========================================================
+   v1.8.68 CODEMIRROR GEOMETRY-SAFE CONTENT SYSTEM
+
+   安全原则：
+   1. 真实 .cm-line 不使用垂直 margin 或负 margin；
+   2. 不用 display:none / 固定压缩高度隐藏真实文档行；
+   3. 需要外观留白时，使用可测量的透明 border、padding
+      或增大的 min-height；
+   4. 可见卡片由伪元素绘制，不把背景铺进透明留白；
+   5. hover 不移动或缩放真实 .cm-line。
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   A. 标题 hover：保留颜色、下划线、路线标记和牌面动画，
+      但不再移动或缩放真实 CodeMirror 行。
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line:is(
+  .sb-line-h1,
+  .sb-line-h2,
+  .sb-line-h3,
+  .sb-line-h4,
+  .sb-line-h5,
+  .sb-line-h6
+),
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line:is(
+  .sb-line-h1,
+  .sb-line-h2,
+  .sb-line-h3,
+  .sb-line-h4,
+  .sb-line-h5,
+  .sb-line-h6
+):hover {
+  transform: none !important;
+}
+
+/* H2 的轻微呼吸感移动到背景牌面，而不是整行。 */
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-line-h2::before {
+  transform-origin: center !important;
+  transition:
+    transform .26s ease,
+    background-position .42s ease,
+    box-shadow .26s ease !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-line-h2:hover::before {
+  transform: scale(1.012) !important;
+}
+
+/* H3 不再改变真实行的左 padding；路线条本身仍会变粗、变金。 */
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-line-h3:hover {
+  padding-left: .72em !important;
+}
+
+/* ---------------------------------------------------------
+   B. 编辑态引用卡片：透明边框承担块前后留白，
+      ::after 绘制原有连续卡片，避免真实行使用 margin。
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+) {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  border-top: 0 solid transparent !important;
+  border-right: 0 solid transparent !important;
+  border-bottom: 0 solid transparent !important;
+  border-left: 0 solid transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  box-sizing: border-box;
+  border-top: 0;
+  border-right: 1px solid var(--sj-quote-border);
+  border-bottom: 0;
+  border-left: 1px solid var(--sj-quote-border);
+  border-radius: 0;
+  background: var(--sj-quote-surface);
+  pointer-events: none;
+}
+
+/* 第一行：原 .6rem 块前距改为透明上边框。 */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+) {
+  border-top-width: .6rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::after {
+  border-top: 1px solid var(--sj-quote-border);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+/* 最后一行：原 .6rem 块后距改为透明下边框。 */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+) {
+  border-bottom-width: .6rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+)::after {
+  border-bottom: 1px solid var(--sj-quote-border);
+  border-bottom-right-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+/* 不再用 -1px 真实行负 margin 消缝。 */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+)
++
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+) {
+  margin-top: 0 !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+) {
+  background: transparent !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+)::after {
+  background: var(--sj-quote-surface-hover);
+}
+
+/* ---------------------------------------------------------
+   C. 编辑态分割线：总视觉高度不变，但由 min-height
+      自身承担，不再使用上下 1.85rem margin。
+   --------------------------------------------------------- */
+
+#sb-main .cm-content > .cm-line.sb-line-hr {
+  height: auto !important;
+  min-height: calc(30px + 3.7rem) !important;
+  margin-top: 0 !important;
+  margin-right: auto !important;
+  margin-bottom: 0 !important;
+  margin-left: auto !important;
+  padding: 0 !important;
+}
+
+@media (max-width: 520px) {
+  #sb-main .cm-content > .cm-line.sb-line-hr {
+    min-height: calc(30px + 3.1rem) !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   D. 编辑态 fenced code：opening / closing 的块间距
+      进入真实行高度；可见交通灯头栏和底部圆角由 ::before 绘制。
+   --------------------------------------------------------- */
+
+/* Opening fence */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+  min-height: calc(34px + 1rem) !important;
+  margin: 0 !important;
+  padding: 1rem 0 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+)::before {
+  content: "";
+  position: absolute;
+  inset: 1rem 0 0;
+  z-index: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--sj-code-border);
+  border-radius: 11px 11px 0 0;
+  background:
+    radial-gradient(
+      circle at 16px 16px,
+      #ef7b7b 0 4px,
+      transparent 4.5px
+    ),
+    radial-gradient(
+      circle at 31px 16px,
+      #e5bd69 0 4px,
+      transparent 4.5px
+    ),
+    radial-gradient(
+      circle at 46px 16px,
+      #76c597 0 4px,
+      transparent 4.5px
+    ),
+    var(--sj-code-header);
+  pointer-events: none;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) .sb-code-info {
+  top: calc(1rem + 8px) !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) .sb-actions {
+  top: calc(1rem + 4px) !important;
+}
+
+/* Closing fence */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:not(:has(
+  .sb-code-info,
+  .sb-actions
+)) {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+  min-height: calc(.72rem + 1rem) !important;
+  margin: 0 !important;
+  padding: 0 0 1rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:not(:has(
+  .sb-code-info,
+  .sb-actions
+))::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 1rem;
+  z-index: 0;
+  box-sizing: border-box;
+  border-top: 0;
+  border-right: 1px solid var(--sj-code-border);
+  border-bottom: 1px solid var(--sj-code-border);
+  border-left: 1px solid var(--sj-code-border);
+  border-radius: 0 0 11px 11px;
+  background: var(--sj-code-surface);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------
+   E. TOC 顶部 Widget：外观间距不变，margin 改为根节点 padding，
+      让 Widget 的测量高度包含全部上下空间。
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.sb-lua-directive-block.sb-lua-top-widget:has(
+  .sb-toc-summary
+) {
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 1.1rem 0 1.45rem !important;
+}
+
+/* ---------------------------------------------------------
+   F. Frontmatter 展开态：连续卡片外观不变；opening / closing
+      的外部留白进入真实行高度，取消相邻行负 margin。
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-frontmatter +
+.cm-line.sb-frontmatter {
+  margin-top: 0 !important;
+}
+
+/* Opening fence */
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+) {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+  min-height: calc(34px + 1rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 1rem 0 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+)::before {
+  content: "";
+  position: absolute;
+  inset: 1rem 0 0;
+  z-index: 0;
+  box-sizing: border-box;
+  border-top: 1px solid var(--sj-fm-border);
+  border-right: 1px solid var(--sj-fm-border);
+  border-bottom: 0;
+  border-left: 1px solid var(--sj-fm-border);
+  border-radius: 12px 12px 0 0;
+  background: var(--sj-fm-background);
+  pointer-events: none;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+)::after {
+  top: 1rem !important;
+  cursor: default !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+/* Closing fence */
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:not(
+  :has(+ .cm-line.sb-frontmatter)
+) {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+  min-height: calc(12px + 1rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 0 1rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:not(
+  :has(+ .cm-line.sb-frontmatter)
+)::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 1rem;
+  z-index: 0;
+  box-sizing: border-box;
+  border-top: 0;
+  border-right: 1px solid var(--sj-fm-border);
+  border-bottom: 1px solid var(--sj-fm-border);
+  border-left: 1px solid var(--sj-fm-border);
+  border-radius: 0 0 12px 12px;
+  background: var(--sj-fm-background);
+  pointer-events: none;
+}
+
+/* opening / closing 在 active 或整组 hover 时仍不把背景铺进留白。 */
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter.cm-activeLine,
+#sb-main:not(:has(.sky-dashboard))
+.cm-content:has(> .cm-line.sb-frontmatter:hover) >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content:has(> .cm-line.sb-frontmatter:hover) >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter::before {
+  background: var(--sj-fm-background-hover);
+}
+
+/* ---------------------------------------------------------
+   G. Frontmatter 折叠安全策略
+
+   CSS display:none 隐藏真实 .cm-line 无法可靠维持 CodeMirror
+   高度映射，因此 v1.8.68 保留完整卡片与徽章，但禁用点击折叠。
+   若旧 session 状态遗留 collapsed class，下面强制恢复展开几何。
+   --------------------------------------------------------- */
+
+html.sj-frontmatter-collapsed
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-frontmatter {
+  display: block !important;
+  visibility: visible !important;
+}
+
+html.sj-frontmatter-collapsed
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+) {
+  min-height: calc(34px + 1rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 1rem 0 0 !important;
+  overflow: visible !important;
+}
+
+html.sj-frontmatter-collapsed
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+)::after {
+  top: 1rem !important;
+  right: 12px !important;
+  min-height: 24px !important;
+  border-radius: 0 0 8px 8px !important;
+}
+
+/* ---------------------------------------------------------
+   H. 行内代码：去除没有文档字符对应的外部 margin，
+      将同等呼吸空间并入胶囊内部，保持整体视觉密度。
+   --------------------------------------------------------- */
+
+#sb-main span.sb-code,
+#sb-main code:not(pre code),
+#sb-main .cm-inlineCode {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-right: .52em !important;
+  padding-left: .52em !important;
+}
+```
+
+```space-lua
+-- priority: -140
+
+-- =========================================================
+-- v1.8.68 FRONTMATTER GEOMETRY SAFETY CONTROLLER
+--
+-- 旧版通过 CSS display:none 折叠真实 CodeMirror 行，可能破坏
+-- 光标和选区坐标。此控制器在所有旧脚本加载后：
+-- 1. 销毁旧折叠监听器；
+-- 2. 清除 collapsed class；
+-- 3. 保留 Frontmatter 卡片和徽章的纯视觉外观。
+-- =========================================================
+
+sjGeometrySafety = sjGeometrySafety or {}
+
+function sjGeometrySafety.install()
+  if js == nil or js.window == nil then
+    return
+  end
+
+  js.window.eval([[
+(function () {
+  const oldController = window.__sjFrontmatterCollapseController;
+
+  if (
+    oldController &&
+    typeof oldController.destroy === "function"
+  ) {
+    oldController.destroy();
+  }
+
+  delete window.__sjFrontmatterCollapseController;
+  document.documentElement.classList.remove(
+    "sj-frontmatter-collapsed"
+  );
+})();
+  ]])
+end
+
+sjGeometrySafety.install()
+```
+---
+
+## 🧾 28｜v1.8.69 简约 Frontmatter 面板
+
+在 v1.8.68 几何安全基础上，将 Frontmatter 重绘为更轻量的元数据面板：
+
+- 取消大面积蓝金渐变与悬浮阴影；
+- 使用低对比表面、细边框和左侧天蓝识别线；
+- 将原来的大号 `frontmatter` 角标缩减为小型 `META` 胶囊；
+- 键名保持蓝色强调，字符串使用克制的淡金色；
+- 亮暗模式分别优化，不改变真实 CodeMirror 行的 margin、display 或固定高度；
+- 延续 v1.8.68 的坐标安全策略，Frontmatter 仅展示，不提供 CSS 折叠。
+
+```space-style
+/* priority: -160 */
+
+/* =========================================================
+   v1.8.69 MINIMAL FRONTMATTER PANEL
+   Geometry-safe · White / Azure / Gold
+   ========================================================= */
+
+html {
+  --sj-fm-minimal-surface: rgba(247, 251, 255, .82);
+  --sj-fm-minimal-surface-hover: rgba(240, 248, 255, .94);
+  --sj-fm-minimal-border: rgba(92, 157, 216, .22);
+  --sj-fm-minimal-divider: rgba(92, 157, 216, .10);
+  --sj-fm-minimal-rail: #6aa7dc;
+  --sj-fm-minimal-key: #3978b7;
+  --sj-fm-minimal-value: #5f7890;
+  --sj-fm-minimal-string: #9a763c;
+  --sj-fm-minimal-badge-background: rgba(255, 255, 255, .78);
+  --sj-fm-minimal-badge-border: rgba(92, 157, 216, .24);
+  --sj-fm-minimal-badge-text: #4c789f;
+  --sj-fm-minimal-gold: #d1ad66;
+}
+
+html[data-theme="dark"] {
+  --sj-fm-minimal-surface: rgba(16, 37, 55, .78);
+  --sj-fm-minimal-surface-hover: rgba(21, 46, 68, .90);
+  --sj-fm-minimal-border: rgba(127, 197, 255, .18);
+  --sj-fm-minimal-divider: rgba(127, 197, 255, .08);
+  --sj-fm-minimal-rail: #5f9fd4;
+  --sj-fm-minimal-key: #9fd1fb;
+  --sj-fm-minimal-value: #b2c5d5;
+  --sj-fm-minimal-string: #dfbd7b;
+  --sj-fm-minimal-badge-background: rgba(13, 31, 47, .82);
+  --sj-fm-minimal-badge-border: rgba(127, 197, 255, .20);
+  --sj-fm-minimal-badge-text: #a9d4f7;
+  --sj-fm-minimal-gold: #dfbb73;
+}
+
+/* ---------------------------------------------------------
+   1. 内容行：轻表面 + 左侧识别线
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+) {
+  min-height: 1.65em !important;
+  margin: 0 !important;
+  padding: .28rem .9rem .28rem 1rem !important;
+  border-top: 0 !important;
+  border-right: 1px solid var(--sj-fm-minimal-border) !important;
+  border-bottom: 0 !important;
+  border-left: 3px solid var(--sj-fm-minimal-rail) !important;
+  border-radius: 0 !important;
+  background: var(--sj-fm-minimal-surface) !important;
+  background-image: none !important;
+  color: var(--sj-fm-minimal-value) !important;
+  -webkit-text-fill-color: var(--sj-fm-minimal-value) !important;
+  box-shadow:
+    inset 0 -1px 0 var(--sj-fm-minimal-divider) !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+).cm-activeLine {
+  background: var(--sj-fm-minimal-surface) !important;
+  background-image: none !important;
+}
+
+/* ---------------------------------------------------------
+   2. Opening fence：保持可测量的上留白，绘制简约顶边
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+) {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+  min-height: calc(26px + .75rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: .75rem 0 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+)::before {
+  content: "";
+  position: absolute;
+  inset: .75rem 0 0;
+  z-index: 0;
+  box-sizing: border-box;
+  border-top: 1px solid var(--sj-fm-minimal-border);
+  border-right: 1px solid var(--sj-fm-minimal-border);
+  border-bottom: 0;
+  border-left: 3px solid var(--sj-fm-minimal-rail);
+  border-radius: 10px 10px 0 0;
+  background: var(--sj-fm-minimal-surface);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Small metadata badge. The inset gold rail keeps the SJ accent. */
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+)::after {
+  content: "META" !important;
+  top: calc(.75rem + 4px) !important;
+  right: .72rem !important;
+  z-index: 3 !important;
+  min-height: 18px !important;
+  padding: 0 .48rem 0 .62rem !important;
+  border: 1px solid var(--sj-fm-minimal-badge-border) !important;
+  border-radius: 999px !important;
+  background: var(--sj-fm-minimal-badge-background) !important;
+  color: var(--sj-fm-minimal-badge-text) !important;
+  -webkit-text-fill-color: var(--sj-fm-minimal-badge-text) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .56rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  letter-spacing: .12em !important;
+  box-shadow:
+    inset 3px 0 0 var(--sj-fm-minimal-gold) !important;
+  filter: none !important;
+  cursor: default !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+/* ---------------------------------------------------------
+   3. Closing fence：保持可测量的下留白，绘制简约底边
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:not(
+  :has(+ .cm-line.sb-frontmatter)
+) {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+  min-height: calc(8px + .75rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 0 .75rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:not(
+  :has(+ .cm-line.sb-frontmatter)
+)::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 .75rem;
+  z-index: 0;
+  box-sizing: border-box;
+  border-top: 0;
+  border-right: 1px solid var(--sj-fm-minimal-border);
+  border-bottom: 1px solid var(--sj-fm-minimal-border);
+  border-left: 3px solid var(--sj-fm-minimal-rail);
+  border-radius: 0 0 10px 10px;
+  background: var(--sj-fm-minimal-surface);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------
+   4. Syntax hierarchy：蓝色键名、安静值、淡金字符串
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+),
+#sb-main:not(:has(.sky-dashboard))
+.cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+) * {
+  font-size: .86rem !important;
+  line-height: 1.56 !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+)
+:is(
+  .sb-propertyName,
+  .sb-keyword,
+  .sb-atom
+) {
+  color: var(--sj-fm-minimal-key) !important;
+  -webkit-text-fill-color: var(--sj-fm-minimal-key) !important;
+  font-weight: 700 !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+)
+:is(
+  .sb-string,
+  .sb-string2
+) {
+  color: var(--sj-fm-minimal-string) !important;
+  -webkit-text-fill-color: var(--sj-fm-minimal-string) !important;
+}
+
+/* ---------------------------------------------------------
+   5. Hover：只做轻微表面提亮，不移动真实编辑行
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content:has(
+  > .cm-line.sb-frontmatter:hover
+) > .cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+) {
+  background: var(--sj-fm-minimal-surface-hover) !important;
+  background-image: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content:has(
+  > .cm-line.sb-frontmatter:hover
+) >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter::before {
+  background: var(--sj-fm-minimal-surface-hover) !important;
+}
+
+/* ---------------------------------------------------------
+   6. Legacy collapsed class：继续强制保持安全展开状态
+   --------------------------------------------------------- */
+
+html.sj-frontmatter-collapsed
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-frontmatter {
+  display: block !important;
+  visibility: visible !important;
+}
+
+html.sj-frontmatter-collapsed
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+) {
+  min-height: calc(26px + .75rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: .75rem 0 0 !important;
+}
+
+html.sj-frontmatter-collapsed
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+)::after {
+  top: calc(.75rem + 4px) !important;
+  right: .72rem !important;
+  min-height: 18px !important;
+  border-radius: 999px !important;
+}
+
+@media (max-width: 760px) {
+  #sb-main:not(:has(.sky-dashboard))
+  .cm-content > .cm-line.sb-frontmatter:not(
+    .sb-line-frontmatter-outside
+  ) {
+    padding: .25rem .7rem .25rem .78rem !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard))
+  .cm-content >
+  .cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+    + .cm-line.sb-frontmatter
+  )::after {
+    right: .56rem !important;
+  }
+}
+```
+
+---
+
+## 🧾 29｜v1.8.70 精致元数据面板与简约代码块
+
+在 v1.8.69 的几何安全基础上继续收敛视觉：
+
+- Frontmatter 改为连续面板，移除每一行之间多余的横线；
+- 使用轻量外轮廓、左侧天蓝识别轨与小型 META 标签；
+- 代码块去除三色交通灯和厚重阴影；
+- 使用细蓝金顶轨、轻量语言胶囊与简洁复制按钮；
+- opening / closing 行仍以 padding 承担上下留白，不使用垂直 margin；
+- 不恢复 Frontmatter CSS 折叠，继续保证 CodeMirror 坐标安全。
+
+```space-style
+/* priority: -170 */
+
+/* =========================================================
+   v1.8.70 REFINED METADATA + CODE SURFACES
+   Geometry-safe · Minimal · Azure / White / Gold
+   ========================================================= */
+
+html {
+  /* Frontmatter */
+  --sj-fm-refined-surface: rgba(247, 251, 255, .88);
+  --sj-fm-refined-surface-hover: rgba(242, 249, 255, .96);
+  --sj-fm-refined-outline: rgba(72, 137, 197, .18);
+  --sj-fm-refined-rail-start: #5d9fd6;
+  --sj-fm-refined-rail-end: #82bce8;
+  --sj-fm-refined-key: #3978b7;
+  --sj-fm-refined-value: #627a90;
+  --sj-fm-refined-string: #98743d;
+  --sj-fm-refined-badge-bg: rgba(255, 255, 255, .78);
+  --sj-fm-refined-badge-border: rgba(71, 137, 196, .18);
+  --sj-fm-refined-badge-text: #527da2;
+  --sj-fm-refined-gold: #cda85e;
+
+  /* Code blocks */
+  --sj-code-refined-surface: #f8fbfe;
+  --sj-code-refined-toolbar: rgba(239, 247, 253, .96);
+  --sj-code-refined-border: rgba(68, 132, 191, .20);
+  --sj-code-refined-divider: rgba(68, 132, 191, .13);
+  --sj-code-refined-accent: #5598cf;
+  --sj-code-refined-gold: #d0aa61;
+  --sj-code-refined-label-bg: rgba(255, 255, 255, .72);
+  --sj-code-refined-label-text: #54758f;
+  --sj-code-refined-shadow: 0 8px 22px rgba(55, 103, 145, .055);
+}
+
+html[data-theme="dark"] {
+  /* Frontmatter */
+  --sj-fm-refined-surface: rgba(15, 34, 50, .86);
+  --sj-fm-refined-surface-hover: rgba(19, 42, 61, .94);
+  --sj-fm-refined-outline: rgba(124, 190, 242, .16);
+  --sj-fm-refined-rail-start: #5596cc;
+  --sj-fm-refined-rail-end: #78b5e5;
+  --sj-fm-refined-key: #9fd1fb;
+  --sj-fm-refined-value: #b5c7d6;
+  --sj-fm-refined-string: #dfbc78;
+  --sj-fm-refined-badge-bg: rgba(12, 29, 44, .84);
+  --sj-fm-refined-badge-border: rgba(127, 197, 255, .17);
+  --sj-fm-refined-badge-text: #abd4f3;
+  --sj-fm-refined-gold: #ddb971;
+
+  /* Code blocks */
+  --sj-code-refined-surface: #101e2b;
+  --sj-code-refined-toolbar: rgba(18, 38, 56, .98);
+  --sj-code-refined-border: rgba(127, 197, 255, .17);
+  --sj-code-refined-divider: rgba(127, 197, 255, .10);
+  --sj-code-refined-accent: #69a9dc;
+  --sj-code-refined-gold: #dcb873;
+  --sj-code-refined-label-bg: rgba(9, 24, 37, .72);
+  --sj-code-refined-label-text: #a9c9e1;
+  --sj-code-refined-shadow: 0 10px 28px rgba(0, 0, 0, .14);
+}
+
+/* =========================================================
+   A. Frontmatter：连续面板，不绘制逐行横线
+   ========================================================= */
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+) {
+  min-height: 1.62em !important;
+  margin: 0 !important;
+  padding: .25rem .92rem .25rem 1rem !important;
+  border-top: 0 !important;
+  border-right: 1px solid var(--sj-fm-refined-outline) !important;
+  border-bottom: 0 !important;
+  border-left: 3px solid var(--sj-fm-refined-rail-start) !important;
+  border-radius: 0 !important;
+  background: var(--sj-fm-refined-surface) !important;
+  background-image: none !important;
+  color: var(--sj-fm-refined-value) !important;
+  -webkit-text-fill-color: var(--sj-fm-refined-value) !important;
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+).cm-activeLine {
+  background: var(--sj-fm-refined-surface) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* Opening row: measurable top breathing room + continuous shell. */
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+) {
+  min-height: calc(25px + .68rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: .68rem 0 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+)::before {
+  content: "";
+  position: absolute;
+  inset: .68rem 0 0;
+  z-index: 0;
+  box-sizing: border-box;
+  border-top: 1px solid var(--sj-fm-refined-outline);
+  border-right: 1px solid var(--sj-fm-refined-outline);
+  border-bottom: 0;
+  border-left: 3px solid var(--sj-fm-refined-rail-start);
+  border-radius: 9px 9px 0 0;
+  background: var(--sj-fm-refined-surface);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Compact metadata sign: blue type + gold pin, no oversized pill. */
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+  + .cm-line.sb-frontmatter
+)::after {
+  content: "META" !important;
+  top: calc(.68rem + 5px) !important;
+  right: .72rem !important;
+  z-index: 3 !important;
+  min-height: 17px !important;
+  padding: 0 .5rem 0 .72rem !important;
+  border: 1px solid var(--sj-fm-refined-badge-border) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(
+      circle at .42rem 50%,
+      var(--sj-fm-refined-gold) 0 2px,
+      transparent 2.4px
+    ),
+    var(--sj-fm-refined-badge-bg) !important;
+  color: var(--sj-fm-refined-badge-text) !important;
+  -webkit-text-fill-color: var(--sj-fm-refined-badge-text) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .54rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  letter-spacing: .13em !important;
+  box-shadow: none !important;
+  filter: none !important;
+  cursor: default !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+/* Closing row: measurable bottom breathing room + continuous shell. */
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:not(
+  :has(+ .cm-line.sb-frontmatter)
+) {
+  min-height: calc(7px + .68rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 0 .68rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter:not(
+  :has(+ .cm-line.sb-frontmatter)
+)::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 .68rem;
+  z-index: 0;
+  box-sizing: border-box;
+  border-top: 0;
+  border-right: 1px solid var(--sj-fm-refined-outline);
+  border-bottom: 1px solid var(--sj-fm-refined-outline);
+  border-left: 3px solid var(--sj-fm-refined-rail-start);
+  border-radius: 0 0 9px 9px;
+  background: var(--sj-fm-refined-surface);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+),
+#sb-main:not(:has(.sky-dashboard))
+.cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+) * {
+  font-size: .85rem !important;
+  line-height: 1.52 !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+)
+:is(.sb-propertyName, .sb-keyword, .sb-atom) {
+  color: var(--sj-fm-refined-key) !important;
+  -webkit-text-fill-color: var(--sj-fm-refined-key) !important;
+  font-weight: 720 !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-line.sb-frontmatter:not(
+  .sb-line-frontmatter-outside
+)
+:is(.sb-string, .sb-string2) {
+  color: var(--sj-fm-refined-string) !important;
+  -webkit-text-fill-color: var(--sj-fm-refined-string) !important;
+}
+
+/* Group hover changes only the surface; it never moves a real line. */
+#sb-main:not(:has(.sky-dashboard))
+.cm-content:has(> .cm-line.sb-frontmatter:hover) >
+.cm-line.sb-frontmatter:not(.sb-line-frontmatter-outside) {
+  background: var(--sj-fm-refined-surface-hover) !important;
+  background-image: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+.cm-content:has(> .cm-line.sb-frontmatter:hover) >
+.cm-line.sb-line-frontmatter-outside.sb-frontmatter::before {
+  background: var(--sj-fm-refined-surface-hover) !important;
+}
+
+/* Legacy collapsed state remains expanded and measurable. */
+html.sj-frontmatter-collapsed
+#sb-main:not(:has(.sky-dashboard))
+.cm-content > .cm-line.sb-frontmatter {
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* =========================================================
+   B. Rendered code blocks：薄工具栏 + 蓝金顶轨
+   ========================================================= */
+
+#sb-main pre,
+#sb-main .sb-code-block {
+  position: relative !important;
+  box-sizing: border-box !important;
+  overflow: auto !important;
+  margin: 1rem 0 !important;
+  padding: 2.35rem 1rem .95rem !important;
+  border: 1px solid var(--sj-code-refined-border) !important;
+  border-radius: 10px !important;
+  background: var(--sj-code-refined-surface) !important;
+  color: var(--sj-code-text) !important;
+  font-family: var(--sj-code-font) !important;
+  box-shadow: var(--sj-code-refined-shadow) !important;
+}
+
+#sb-main pre::before,
+#sb-main .sb-code-block::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 30px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--sj-code-refined-divider);
+  border-radius: 9px 9px 0 0;
+  background:
+    linear-gradient(
+      90deg,
+      var(--sj-code-refined-accent) 0 36px,
+      var(--sj-code-refined-gold) 36px 49px,
+      transparent 49px
+    ) top left / 100% 2px no-repeat,
+    var(--sj-code-refined-toolbar) !important;
+  pointer-events: none;
+}
+
+/* =========================================================
+   C. Source-mode fenced code：同一套简约工具栏
+   ========================================================= */
+
+#sb-main .cm-content > .sb-line-fenced-code {
+  min-height: 1.62em !important;
+  margin: 0 !important;
+  padding: .1rem .95rem !important;
+  border-top: 0 !important;
+  border-right: 1px solid var(--sj-code-refined-border) !important;
+  border-bottom: 0 !important;
+  border-left: 1px solid var(--sj-code-refined-border) !important;
+  border-radius: 0 !important;
+  background: var(--sj-code-refined-surface) !important;
+  background-image: none !important;
+  color: var(--sj-code-text) !important;
+  font-size: .89em !important;
+  line-height: 1.62 !important;
+  box-shadow: none !important;
+}
+
+/* Opening fence: top space is padding, never vertical margin. */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) {
+  min-height: calc(30px + .85rem) !important;
+  margin: 0 !important;
+  padding: .85rem 0 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+)::before {
+  content: "";
+  position: absolute;
+  inset: .85rem 0 0;
+  z-index: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--sj-code-refined-border);
+  border-radius: 10px 10px 0 0;
+  background:
+    linear-gradient(
+      90deg,
+      var(--sj-code-refined-accent) 0 36px,
+      var(--sj-code-refined-gold) 36px 49px,
+      transparent 49px
+    ) top left / 100% 2px no-repeat,
+    var(--sj-code-refined-toolbar) !important;
+  box-shadow: var(--sj-code-refined-shadow);
+  pointer-events: none;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) .sb-code-info {
+  top: calc(.85rem + 7px) !important;
+  right: 41px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 17px !important;
+  padding: 0 .46rem !important;
+  border: 1px solid var(--sj-code-refined-divider) !important;
+  border-radius: 999px !important;
+  background: var(--sj-code-refined-label-bg) !important;
+  color: var(--sj-code-refined-label-text) !important;
+  -webkit-text-fill-color: var(--sj-code-refined-label-text) !important;
+  font-size: .64rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: .055em !important;
+  text-transform: uppercase !important;
+  box-shadow: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) .sb-actions {
+  top: calc(.85rem + 3px) !important;
+  right: 7px !important;
+}
+
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-actions button,
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-code-copy-button {
+  width: 24px !important;
+  min-width: 24px !important;
+  max-width: 24px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  color: var(--sj-code-refined-label-text) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-actions button:hover,
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-code-copy-button:hover {
+  border-color: var(--sj-code-refined-divider) !important;
+  background: var(--sj-code-refined-label-bg) !important;
+  color: var(--sj-code-refined-accent) !important;
+}
+
+/* Closing fence: bottom space is padding, never vertical margin. */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:not(:has(
+  .sb-code-info,
+  .sb-actions
+)) {
+  min-height: calc(.55rem + .85rem) !important;
+  margin: 0 !important;
+  padding: 0 0 .85rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:not(:has(
+  .sb-code-info,
+  .sb-actions
+))::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 .85rem;
+  z-index: 0;
+  box-sizing: border-box;
+  border-top: 0;
+  border-right: 1px solid var(--sj-code-refined-border);
+  border-bottom: 1px solid var(--sj-code-refined-border);
+  border-left: 1px solid var(--sj-code-refined-border);
+  border-radius: 0 0 10px 10px;
+  background: var(--sj-code-refined-surface) !important;
+  box-shadow: 0 7px 18px rgba(55, 103, 145, .035);
+  pointer-events: none;
+}
+
+/* Current-line highlight remains visually continuous. */
+#sb-main .cm-content > .sb-line-fenced-code.cm-activeLine {
+  background: var(--sj-code-refined-surface) !important;
+  background-image: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+).cm-activeLine {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+@media (max-width: 760px) {
+  #sb-main:not(:has(.sky-dashboard))
+  .cm-content > .cm-line.sb-frontmatter:not(
+    .sb-line-frontmatter-outside
+  ) {
+    padding: .23rem .68rem .23rem .76rem !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard))
+  .cm-content >
+  .cm-line.sb-line-frontmatter-outside.sb-frontmatter:has(
+    + .cm-line.sb-frontmatter
+  )::after {
+    right: .52rem !important;
+  }
+
+  #sb-main .cm-content > .sb-line-fenced-code {
+    padding-right: .72rem !important;
+    padding-left: .72rem !important;
+  }
+}
+```
+
+---
+
+## ☁️ 30｜v1.8.71 空之航路引用块
+
+引用块改为更贴合 Sky Journal 世界观的旅行札记样式：
+
+- 使用轻柔云层渐变与左侧蓝色航路轨；
+- 顶部加入 `SKY LOG` 航行记录标签；
+- 右上角使用虚线航迹、金色航标点与上升方向箭头；
+- 亮色模式呈现晴空与云雾，暗色模式呈现夜航与深空蓝；
+- 编辑态继续使用可测量透明边框承担块前后间距；
+- 不对真实 `.cm-line` 使用垂直 margin、负 margin 或 transform。
+
+```space-style
+/* priority: -180 */
+
+/* =========================================================
+   v1.8.71 SKY VOYAGE QUOTE SYSTEM
+   Sky log · Air route · Travel note
+
+   Geometry safety:
+   - no vertical margin on real .cm-line nodes;
+   - no transform on real quote lines;
+   - block spacing remains measurable transparent border;
+   - all decorative layers are absolute and pointer-events:none.
+   ========================================================= */
+
+html {
+  --sj-voyage-quote-surface:
+    radial-gradient(
+      ellipse at 92% 12%,
+      rgba(255, 255, 255, .82) 0 7%,
+      rgba(255, 255, 255, .38) 18%,
+      transparent 38%
+    ),
+    radial-gradient(
+      ellipse at 8% 110%,
+      rgba(104, 171, 226, .13),
+      transparent 48%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(250, 253, 255, .98),
+      rgba(235, 246, 255, .94)
+    );
+  --sj-voyage-quote-surface-hover:
+    radial-gradient(
+      ellipse at 92% 12%,
+      rgba(255, 255, 255, .90) 0 8%,
+      rgba(255, 255, 255, .44) 19%,
+      transparent 40%
+    ),
+    radial-gradient(
+      ellipse at 8% 110%,
+      rgba(104, 171, 226, .17),
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(248, 253, 255, 1),
+      rgba(229, 243, 254, .98)
+    );
+  --sj-voyage-quote-border: rgba(74, 139, 197, .22);
+  --sj-voyage-quote-route: #5f9fd3;
+  --sj-voyage-quote-route-soft: rgba(95, 159, 211, .34);
+  --sj-voyage-quote-gold: #cca75f;
+  --sj-voyage-quote-label: #527da1;
+  --sj-voyage-quote-text: #506a80;
+  --sj-voyage-quote-shadow: 0 10px 26px rgba(58, 108, 151, .07);
+}
+
+html[data-theme="dark"] {
+  --sj-voyage-quote-surface:
+    radial-gradient(
+      ellipse at 92% 12%,
+      rgba(116, 182, 232, .12) 0 8%,
+      rgba(116, 182, 232, .05) 20%,
+      transparent 42%
+    ),
+    radial-gradient(
+      ellipse at 8% 110%,
+      rgba(77, 141, 192, .14),
+      transparent 48%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(18, 42, 61, .97),
+      rgba(10, 28, 44, .96)
+    );
+  --sj-voyage-quote-surface-hover:
+    radial-gradient(
+      ellipse at 92% 12%,
+      rgba(126, 195, 246, .16) 0 9%,
+      rgba(126, 195, 246, .07) 22%,
+      transparent 44%
+    ),
+    radial-gradient(
+      ellipse at 8% 110%,
+      rgba(83, 153, 207, .18),
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(22, 49, 70, .99),
+      rgba(12, 32, 49, .98)
+    );
+  --sj-voyage-quote-border: rgba(126, 194, 244, .20);
+  --sj-voyage-quote-route: #70afe0;
+  --sj-voyage-quote-route-soft: rgba(112, 175, 224, .30);
+  --sj-voyage-quote-gold: #dfba73;
+  --sj-voyage-quote-label: #acd3ef;
+  --sj-voyage-quote-text: #bed0de;
+  --sj-voyage-quote-shadow: 0 12px 30px rgba(0, 0, 0, .16);
+}
+
+/* =========================================================
+   A. Rendered / preview blockquotes
+   ========================================================= */
+
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote {
+  position: relative !important;
+  isolation: isolate !important;
+  box-sizing: border-box !important;
+  margin: 1.05rem 0 !important;
+  padding: 2.35rem 1.25rem 1.05rem 1.35rem !important;
+  overflow: hidden !important;
+  border: 1px solid var(--sj-voyage-quote-border) !important;
+  border-radius: 15px !important;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route-soft) 0 5px,
+      transparent 5px 10px
+    ) top .95rem right 2rem / 3.8rem 1px no-repeat,
+    radial-gradient(
+      circle at calc(100% - 1rem) .95rem,
+      var(--sj-voyage-quote-gold) 0 2px,
+      transparent 2.5px
+    ),
+    linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route) 0 3px,
+      transparent 3px
+    ),
+    var(--sj-voyage-quote-surface) !important;
+  color: var(--sj-voyage-quote-text) !important;
+  line-height: 1.72 !important;
+  box-shadow:
+    inset 4px 0 0 rgba(204, 167, 95, .18),
+    var(--sj-voyage-quote-shadow) !important;
+  transition:
+    border-color .20s ease,
+    background .24s ease,
+    box-shadow .20s ease !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote:hover,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--sj-voyage-quote-route),
+    transparent 62%
+  ) !important;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route-soft) 0 5px,
+      transparent 5px 10px
+    ) top .95rem right 2rem / 3.8rem 1px no-repeat,
+    radial-gradient(
+      circle at calc(100% - 1rem) .95rem,
+      var(--sj-voyage-quote-gold) 0 2px,
+      transparent 2.5px
+    ),
+    linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route) 0 3px,
+      transparent 3px
+    ),
+    var(--sj-voyage-quote-surface-hover) !important;
+  box-shadow:
+    inset 4px 0 0 rgba(204, 167, 95, .24),
+    0 12px 30px rgba(58, 108, 151, .09) !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote::before,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote::before {
+  content: "SKY LOG  ·  ✦" !important;
+  position: absolute !important;
+  left: 1.25rem !important;
+  top: .68rem !important;
+  z-index: 1 !important;
+  color: var(--sj-voyage-quote-label) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .62rem !important;
+  font-weight: 760 !important;
+  line-height: 1 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  pointer-events: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote::after,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote::after {
+  content: "↗" !important;
+  position: absolute !important;
+  right: .72rem !important;
+  top: .54rem !important;
+  z-index: 1 !important;
+  color: var(--sj-voyage-quote-route) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .78rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  opacity: .88 !important;
+  pointer-events: none !important;
+}
+
+/* =========================================================
+   B. CodeMirror live-preview quote lines
+   ========================================================= */
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+) {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+  box-sizing: border-box !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: .38rem 1.15rem .38rem 1.35rem !important;
+  border-top-style: solid !important;
+  border-right-style: solid !important;
+  border-bottom-style: solid !important;
+  border-left-style: solid !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--sj-voyage-quote-text) !important;
+  text-indent: 0 !important;
+  line-height: 1.72 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+)::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  box-sizing: border-box !important;
+  border-top: 0 !important;
+  border-right: 1px solid var(--sj-voyage-quote-border) !important;
+  border-bottom: 0 !important;
+  border-left: 1px solid var(--sj-voyage-quote-border) !important;
+  border-radius: 0 !important;
+  background:
+    linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route) 0 3px,
+      transparent 3px
+    ),
+    var(--sj-voyage-quote-surface) !important;
+  box-shadow: inset 4px 0 0 rgba(204, 167, 95, .16) !important;
+  pointer-events: none !important;
+}
+
+/* First explicit quote line: measurable top spacing + route header. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+) {
+  border-top-width: .6rem !important;
+  padding-top: 1.62rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::before {
+  content: "SKY LOG  ·  ✦" !important;
+  position: absolute !important;
+  left: 1.18rem !important;
+  top: .48rem !important;
+  z-index: 1 !important;
+  color: var(--sj-voyage-quote-label) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .60rem !important;
+  font-weight: 760 !important;
+  line-height: 1 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  pointer-events: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::after {
+  border-top: 1px solid var(--sj-voyage-quote-border) !important;
+  border-top-left-radius: 15px !important;
+  border-top-right-radius: 15px !important;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route-soft) 0 5px,
+      transparent 5px 10px
+    ) top .74rem right 1.95rem / 3.5rem 1px no-repeat,
+    radial-gradient(
+      circle at calc(100% - .95rem) .74rem,
+      var(--sj-voyage-quote-gold) 0 2px,
+      transparent 2.5px
+    ),
+    linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route) 0 3px,
+      transparent 3px
+    ),
+    var(--sj-voyage-quote-surface) !important;
+}
+
+/* Last explicit quote line: measurable bottom spacing. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+) {
+  border-bottom-width: .6rem !important;
+  padding-bottom: .85rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+)::after {
+  border-bottom: 1px solid var(--sj-voyage-quote-border) !important;
+  border-bottom-right-radius: 15px !important;
+  border-bottom-left-radius: 15px !important;
+}
+
+/* Adjacent quote lines stay continuous without negative margin. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+)
++
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+) {
+  margin-top: 0 !important;
+}
+
+/* Active-line highlight only repaints the decorative surface. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+) {
+  background: transparent !important;
+  transform: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+)::after {
+  background:
+    linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route) 0 3px,
+      transparent 3px
+    ),
+    var(--sj-voyage-quote-surface-hover) !important;
+}
+
+/* Preserve the route header when the first quote line is active. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::after {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route-soft) 0 5px,
+      transparent 5px 10px
+    ) top .74rem right 1.95rem / 3.5rem 1px no-repeat,
+    radial-gradient(
+      circle at calc(100% - .95rem) .74rem,
+      var(--sj-voyage-quote-gold) 0 2px,
+      transparent 2.5px
+    ),
+    linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route) 0 3px,
+      transparent 3px
+    ),
+    var(--sj-voyage-quote-surface-hover) !important;
+}
+
+@media (max-width: 760px) {
+  #sb-main:not(:has(.sky-dashboard))
+  :not(.cm-editor) > blockquote,
+  #sb-main:not(:has(.sky-dashboard))
+  :not(.cm-editor) > .sb-blockquote {
+    padding-right: .95rem !important;
+    padding-left: 1.05rem !important;
+    border-radius: 13px !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard)) .cm-editor
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  ) {
+    padding-right: .92rem !important;
+    padding-left: 1.05rem !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard)) .cm-editor
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  ):not(
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  ) {
+    padding-top: 1.52rem !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard)) .cm-editor
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  ):not(
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )::before {
+    left: .98rem !important;
+    font-size: .57rem !important;
+  }
+}
+```
+
+
+---
+
+## 🛫 31｜v1.8.72 航空玻璃编辑态代码块
+
+正在编辑中的 fenced code block 改为与 Frontmatter 同构的连续面板：
+
+- 取消厚重工具栏与蓝金顶轨；
+- 改用青绿色航空玻璃色，与蓝色 Frontmatter 区分；
+- 使用连续表面、左侧识别轨、紧凑 `CODE` 标签；
+- 保留语言标签与复制按钮；
+- 不对真实 `.cm-line` 使用垂直 margin、负 margin 或 transform；
+- 渲染后的代码块保持 v1.8.70 样式不变。
+
+```space-style
+/* priority: -190 */
+
+/* =========================================================
+   v1.8.72 AERO GLASS SOURCE CODE
+   Frontmatter-like structure · Teal / White / Amber
+
+   Only affects fenced code while editing.
+   Rendered code blocks remain unchanged.
+
+   Geometry safety:
+   - no vertical margin on real CodeMirror lines;
+   - no fixed collapsed height;
+   - no transform on real .cm-line nodes;
+   - block spacing belongs to measurable padding;
+   - decorative layers do not intercept pointer events.
+   ========================================================= */
+
+html {
+  --sj-code-edit-surface: rgba(243, 251, 250, .92);
+  --sj-code-edit-surface-active: rgba(237, 249, 247, .98);
+  --sj-code-edit-outline: rgba(52, 147, 138, .20);
+  --sj-code-edit-rail: #46a79f;
+  --sj-code-edit-rail-soft: #72c5bb;
+  --sj-code-edit-text: #426c69;
+  --sj-code-edit-label-bg: rgba(255, 255, 255, .76);
+  --sj-code-edit-label-border: rgba(52, 147, 138, .18);
+  --sj-code-edit-label-text: #4b817c;
+  --sj-code-edit-language-bg: rgba(224, 245, 241, .84);
+  --sj-code-edit-language-text: #397c76;
+  --sj-code-edit-amber: #d0a35b;
+  --sj-code-edit-button-hover: rgba(70, 167, 159, .10);
+}
+
+html[data-theme="dark"] {
+  --sj-code-edit-surface: rgba(13, 38, 39, .91);
+  --sj-code-edit-surface-active: rgba(17, 47, 47, .98);
+  --sj-code-edit-outline: rgba(112, 208, 196, .17);
+  --sj-code-edit-rail: #55b8ae;
+  --sj-code-edit-rail-soft: #7ed2c8;
+  --sj-code-edit-text: #b8d5d1;
+  --sj-code-edit-label-bg: rgba(8, 29, 30, .78);
+  --sj-code-edit-label-border: rgba(112, 208, 196, .17);
+  --sj-code-edit-label-text: #9ed5cf;
+  --sj-code-edit-language-bg: rgba(22, 61, 59, .90);
+  --sj-code-edit-language-text: #a8ddd7;
+  --sj-code-edit-amber: #dfb46d;
+  --sj-code-edit-button-hover: rgba(85, 184, 174, .13);
+}
+
+/* ---------------------------------------------------------
+   1. Continuous code body
+   Same visual grammar as Frontmatter, different color family.
+   --------------------------------------------------------- */
+
+#sb-main .cm-content > .sb-line-fenced-code {
+  position: relative !important;
+  box-sizing: border-box !important;
+  min-height: 1.62em !important;
+  margin: 0 !important;
+  padding: .22rem .92rem .22rem 1rem !important;
+  overflow: visible !important;
+  border-top: 0 !important;
+  border-right: 1px solid var(--sj-code-edit-outline) !important;
+  border-bottom: 0 !important;
+  border-left: 3px solid var(--sj-code-edit-rail) !important;
+  border-radius: 0 !important;
+  background: var(--sj-code-edit-surface) !important;
+  background-image: none !important;
+  color: var(--sj-code-edit-text) !important;
+  font-family: var(--sj-code-font) !important;
+  font-size: .89em !important;
+  line-height: 1.62 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* The active source line is a soft glass brightening, not a stripe. */
+#sb-main .cm-content > .sb-line-fenced-code.cm-activeLine {
+  background: var(--sj-code-edit-surface-active) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* ---------------------------------------------------------
+   2. Opening fence
+   Measurable top breathing room + compact CODE / language area.
+   --------------------------------------------------------- */
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) {
+  min-height: calc(25px + .68rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: .68rem 0 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  color: transparent !important;
+  box-shadow: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+)::before {
+  content: "";
+  position: absolute;
+  inset: .68rem 0 0;
+  z-index: 0;
+  box-sizing: border-box;
+  border-top: 1px solid var(--sj-code-edit-outline);
+  border-right: 1px solid var(--sj-code-edit-outline);
+  border-bottom: 0;
+  border-left: 3px solid var(--sj-code-edit-rail);
+  border-radius: 9px 9px 0 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(70, 167, 159, .08),
+      transparent 34%
+    ),
+    var(--sj-code-edit-surface);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Compact CODE sign: teal glass + a small amber navigation light. */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+)::after {
+  content: "CODE" !important;
+  position: absolute !important;
+  top: calc(.68rem + 5px) !important;
+  left: .72rem !important;
+  right: auto !important;
+  z-index: 3 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  min-height: 17px !important;
+  padding: 0 .5rem 0 .72rem !important;
+  border: 1px solid var(--sj-code-edit-label-border) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(
+      circle at .42rem 50%,
+      var(--sj-code-edit-amber) 0 2px,
+      transparent 2.4px
+    ),
+    var(--sj-code-edit-label-bg) !important;
+  color: var(--sj-code-edit-label-text) !important;
+  -webkit-text-fill-color: var(--sj-code-edit-label-text) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .54rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  letter-spacing: .13em !important;
+  box-shadow: none !important;
+  filter: none !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+/* Language badge remains visible, but is visually quieter than CODE. */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) .sb-code-info {
+  position: absolute !important;
+  top: calc(.68rem + 5px) !important;
+  right: 41px !important;
+  z-index: 4 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  min-height: 17px !important;
+  margin: 0 !important;
+  padding: 0 .48rem !important;
+  border: 1px solid var(--sj-code-edit-label-border) !important;
+  border-radius: 999px !important;
+  background: var(--sj-code-edit-language-bg) !important;
+  color: var(--sj-code-edit-language-text) !important;
+  -webkit-text-fill-color: var(--sj-code-edit-language-text) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .61rem !important;
+  font-weight: 720 !important;
+  line-height: 1 !important;
+  letter-spacing: .045em !important;
+  text-transform: uppercase !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) .sb-actions {
+  top: calc(.68rem + 2px) !important;
+  right: 7px !important;
+  z-index: 5 !important;
+}
+
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-actions button,
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-code-copy-button {
+  width: 24px !important;
+  min-width: 24px !important;
+  max-width: 24px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  color: var(--sj-code-edit-label-text) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-actions button:hover,
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-code-copy-button:hover {
+  border-color: var(--sj-code-edit-label-border) !important;
+  background: var(--sj-code-edit-button-hover) !important;
+  color: var(--sj-code-edit-rail) !important;
+  transform: none !important;
+}
+
+/* ---------------------------------------------------------
+   3. Closing fence
+   The bottom radius and breathing room remain measurable.
+   --------------------------------------------------------- */
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:not(:has(
+  .sb-code-info,
+  .sb-actions
+)) {
+  min-height: calc(7px + .68rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 0 .68rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  color: transparent !important;
+  box-shadow: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:not(:has(
+  .sb-code-info,
+  .sb-actions
+))::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 .68rem;
+  z-index: 0;
+  box-sizing: border-box;
+  border-top: 0;
+  border-right: 1px solid var(--sj-code-edit-outline);
+  border-bottom: 1px solid var(--sj-code-edit-outline);
+  border-left: 3px solid var(--sj-code-edit-rail);
+  border-radius: 0 0 9px 9px;
+  background: var(--sj-code-edit-surface);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Opening / closing Markdown fences remain visually hidden. */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code .sb-meta {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Keep syntax colors controlled by SilverBullet / the active theme. */
+#sb-main .cm-content >
+.sb-line-fenced-code :is(
+  .sb-code,
+  .sb-string,
+  .sb-string2,
+  .sb-number,
+  .sb-keyword,
+  .sb-variableName,
+  .sb-typeName,
+  .sb-comment,
+  .sb-operator,
+  .sb-propertyName,
+  .sb-atom
+) {
+  background: transparent !important;
+}
+
+@media (max-width: 760px) {
+  #sb-main .cm-content > .sb-line-fenced-code {
+    padding-right: .68rem !important;
+    padding-left: .76rem !important;
+  }
+
+  #sb-main .cm-content >
+  .sb-line-code-outside.sb-line-fenced-code:has(
+    .sb-code-info,
+    .sb-actions
+  )::after {
+    left: .52rem !important;
+  }
+
+  #sb-main .cm-content >
+  .sb-line-code-outside.sb-line-fenced-code:has(
+    .sb-code-info,
+    .sb-actions
+  ) .sb-code-info {
+    max-width: 38vw !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}
+```
+
+---
+
+## ☁️ 32｜v1.8.73 无缝多行引用块
+
+多行引用现在显示为一张连续的空中旅行日志卡片：
+
+- 取消当前编辑行的独立明暗背景，避免逐行横向色带；
+- 编辑态表面改为不会随每行重新开始的横向渐变；
+- 压缩顶部 `SKY LOG` 区域，使比例更精致；
+- 保留航线、金色航标和蓝金左侧识别轨；
+- 继续遵守 CodeMirror 几何安全规则。
+
+```space-style
+/* priority: -200 */
+
+/* =========================================================
+   v1.8.73 SEAMLESS SKY LOG QUOTES
+   Continuous multi-line surface · No active-line banding
+   ========================================================= */
+
+html {
+  --sj-voyage-quote-editor-surface:
+    linear-gradient(
+      90deg,
+      rgba(247, 252, 255, .99) 0%,
+      rgba(238, 248, 255, .98) 52%,
+      rgba(249, 253, 255, .99) 100%
+    );
+  --sj-voyage-quote-editor-gold-soft: rgba(204, 167, 95, .18);
+}
+
+html[data-theme="dark"] {
+  --sj-voyage-quote-editor-surface:
+    linear-gradient(
+      90deg,
+      rgba(17, 42, 61, .98) 0%,
+      rgba(13, 34, 51, .98) 54%,
+      rgba(18, 43, 62, .98) 100%
+    );
+  --sj-voyage-quote-editor-gold-soft: rgba(223, 186, 115, .18);
+}
+
+/* ---------------------------------------------------------
+   A. All editable quote lines share the same horizontal
+      surface, so adjacent lines visually become one card.
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: .30rem 1.16rem .30rem 1.40rem !important;
+  line-height: 1.68 !important;
+  transform: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+)::after {
+  border-top: 0 !important;
+  border-right: 1px solid var(--sj-voyage-quote-border) !important;
+  border-bottom: 0 !important;
+  border-left: 1px solid var(--sj-voyage-quote-border) !important;
+  border-radius: 0 !important;
+  background:
+    linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route) 0 3px,
+      var(--sj-voyage-quote-editor-gold-soft) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-voyage-quote-editor-surface) !important;
+  box-shadow: none !important;
+}
+
+/* ---------------------------------------------------------
+   B. First line: compact flight-log header.
+   Transparent border remains measurable by CodeMirror.
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+) {
+  border-top-width: .42rem !important;
+  padding-top: 1.28rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::before {
+  content: "SKY LOG  ·  ✦" !important;
+  left: 1.16rem !important;
+  top: .40rem !important;
+  font-size: .60rem !important;
+  letter-spacing: .13em !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::after {
+  border-top: 1px solid var(--sj-voyage-quote-border) !important;
+  border-top-left-radius: 15px !important;
+  border-top-right-radius: 15px !important;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route-soft) 0 5px,
+      transparent 5px 10px
+    ) top .64rem right 1.90rem / 3.25rem 1px no-repeat,
+    radial-gradient(
+      circle at calc(100% - .98rem) .64rem,
+      var(--sj-voyage-quote-gold) 0 2px,
+      transparent 2.5px
+    ),
+    linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route) 0 3px,
+      var(--sj-voyage-quote-editor-gold-soft) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-voyage-quote-editor-surface) !important;
+}
+
+/* ---------------------------------------------------------
+   C. Last line: compact measurable tail spacing.
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+) {
+  border-bottom-width: .42rem !important;
+  padding-bottom: .72rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+)::after {
+  border-bottom: 1px solid var(--sj-voyage-quote-border) !important;
+  border-bottom-right-radius: 15px !important;
+  border-bottom-left-radius: 15px !important;
+}
+
+/* ---------------------------------------------------------
+   D. Active line keeps the same surface.
+   This removes the ugly horizontal band in multi-line quotes.
+   --------------------------------------------------------- */
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+)::after {
+  background:
+    linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route) 0 3px,
+      var(--sj-voyage-quote-editor-gold-soft) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-voyage-quote-editor-surface) !important;
+  box-shadow: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::after {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route-soft) 0 5px,
+      transparent 5px 10px
+    ) top .64rem right 1.90rem / 3.25rem 1px no-repeat,
+    radial-gradient(
+      circle at calc(100% - .98rem) .64rem,
+      var(--sj-voyage-quote-gold) 0 2px,
+      transparent 2.5px
+    ),
+    linear-gradient(
+      90deg,
+      var(--sj-voyage-quote-route) 0 3px,
+      var(--sj-voyage-quote-editor-gold-soft) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-voyage-quote-editor-surface) !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 760px) {
+  #sb-main:not(:has(.sky-dashboard)) .cm-editor
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  ) {
+    padding-right: .92rem !important;
+    padding-left: 1.08rem !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard)) .cm-editor
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  ):not(
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  ) {
+    padding-top: 1.22rem !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard)) .cm-editor
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  ):not(
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )::before {
+    left: .94rem !important;
+    font-size: .56rem !important;
+  }
+}
+```
+
+---
+
+## 🛰️ 33｜v1.8.74 星航灰蓝编辑态代码块
+
+正在编辑中的 fenced code block 重新调整为更统一的连续面板：
+
+- 配色由青绿色改为云灰白／星航靛蓝／导航金，更贴合 Sky Journal；
+- 顶行、正文与尾行使用完全相同的表面色和边框色；
+- 取消当前编辑行的独立底色，避免代码块内部出现横向色带；
+- opening／closing fence 直接绘制真实边框，不再使用内缩伪元素拼接；
+- 修复底部圆角和边框末端可能出现的断口、重影或细小缝隙；
+- 继续保留紧凑 CODE 标签、语言标签与复制按钮；
+- 不对真实 CodeMirror 行使用垂直 margin、负 margin 或 transform。
+
+```space-style
+/* priority: -210 */
+
+/* =========================================================
+   v1.8.74 STARLIGHT SLATE SOURCE CODE
+   Unified opening / body / closing surface
+   Cloud Slate · Airship Indigo · Navigation Gold
+
+   Geometry safety:
+   - no vertical margin on real CodeMirror lines;
+   - no negative margin;
+   - no transform on real .cm-line nodes;
+   - opening and closing fences use their own measurable height;
+   - all three sections share one exact surface and border palette.
+   ========================================================= */
+
+html {
+  --sj-code-edit-surface: #f5f7fb;
+  --sj-code-edit-outline: rgba(78, 99, 139, .22);
+  --sj-code-edit-rail: #7388bd;
+  --sj-code-edit-rail-soft: #91a4d1;
+  --sj-code-edit-text: #4d5d76;
+  --sj-code-edit-label-bg: rgba(255, 255, 255, .76);
+  --sj-code-edit-label-border: rgba(82, 103, 145, .18);
+  --sj-code-edit-label-text: #667696;
+  --sj-code-edit-language-bg: rgba(116, 137, 185, .10);
+  --sj-code-edit-language-text: #6074a2;
+  --sj-code-edit-gold: #cfa65e;
+  --sj-code-edit-button-hover: rgba(111, 135, 190, .11);
+}
+
+html[data-theme="dark"] {
+  --sj-code-edit-surface: #141c2b;
+  --sj-code-edit-outline: rgba(147, 168, 211, .19);
+  --sj-code-edit-rail: #8298d2;
+  --sj-code-edit-rail-soft: #9eb0df;
+  --sj-code-edit-text: #c3cede;
+  --sj-code-edit-label-bg: rgba(22, 31, 48, .88);
+  --sj-code-edit-label-border: rgba(151, 173, 218, .18);
+  --sj-code-edit-label-text: #b5c2dc;
+  --sj-code-edit-language-bg: rgba(120, 143, 199, .15);
+  --sj-code-edit-language-text: #c1ceed;
+  --sj-code-edit-gold: #dfbb73;
+  --sj-code-edit-button-hover: rgba(130, 152, 210, .14);
+}
+
+/* ---------------------------------------------------------
+   1. Shared body: one flat surface, no active-line banding
+   --------------------------------------------------------- */
+
+#sb-main .cm-content > .sb-line-fenced-code {
+  position: relative !important;
+  box-sizing: border-box !important;
+  min-height: 1.62em !important;
+  margin: 0 !important;
+  padding: .22rem .92rem .22rem 1rem !important;
+  overflow: visible !important;
+  border-top: 0 !important;
+  border-right: 1px solid var(--sj-code-edit-outline) !important;
+  border-bottom: 0 !important;
+  border-left: 3px solid var(--sj-code-edit-rail) !important;
+  border-radius: 0 !important;
+  background: var(--sj-code-edit-surface) !important;
+  background-color: var(--sj-code-edit-surface) !important;
+  background-image: none !important;
+  color: var(--sj-code-edit-text) !important;
+  font-family: var(--sj-code-font) !important;
+  font-size: .89em !important;
+  line-height: 1.62 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+#sb-main .cm-content > .sb-line-fenced-code.cm-activeLine {
+  background: var(--sj-code-edit-surface) !important;
+  background-color: var(--sj-code-edit-surface) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* ---------------------------------------------------------
+   2. Opening fence: the real line draws the top shell
+   No pseudo surface, so its color and border match the body.
+   --------------------------------------------------------- */
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) {
+  min-height: 31px !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  border-top: 1px solid var(--sj-code-edit-outline) !important;
+  border-right: 1px solid var(--sj-code-edit-outline) !important;
+  border-bottom: 0 !important;
+  border-left: 3px solid var(--sj-code-edit-rail) !important;
+  border-radius: 9px 9px 0 0 !important;
+  background: var(--sj-code-edit-surface) !important;
+  background-color: var(--sj-code-edit-surface) !important;
+  background-image: none !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Remove the older pseudo surface completely. */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+)::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Compact CODE sign: indigo glass with one gold navigation light. */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+)::after {
+  content: "CODE" !important;
+  position: absolute !important;
+  top: 6px !important;
+  left: .68rem !important;
+  right: auto !important;
+  z-index: 3 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  min-height: 18px !important;
+  padding: 0 .52rem 0 .74rem !important;
+  border: 1px solid var(--sj-code-edit-label-border) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(
+      circle at .42rem 50%,
+      var(--sj-code-edit-gold) 0 2px,
+      transparent 2.4px
+    ),
+    var(--sj-code-edit-label-bg) !important;
+  color: var(--sj-code-edit-label-text) !important;
+  -webkit-text-fill-color: var(--sj-code-edit-label-text) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .54rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  letter-spacing: .13em !important;
+  box-shadow: none !important;
+  filter: none !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) .sb-code-info {
+  position: absolute !important;
+  top: 6px !important;
+  right: 41px !important;
+  z-index: 4 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  min-height: 18px !important;
+  margin: 0 !important;
+  padding: 0 .5rem !important;
+  border: 1px solid var(--sj-code-edit-label-border) !important;
+  border-radius: 999px !important;
+  background: var(--sj-code-edit-language-bg) !important;
+  color: var(--sj-code-edit-language-text) !important;
+  -webkit-text-fill-color: var(--sj-code-edit-language-text) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .61rem !important;
+  font-weight: 720 !important;
+  line-height: 1 !important;
+  letter-spacing: .045em !important;
+  text-transform: uppercase !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:has(
+  .sb-code-info,
+  .sb-actions
+) .sb-actions {
+  top: 3px !important;
+  right: 7px !important;
+  z-index: 5 !important;
+}
+
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-actions button,
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-code-copy-button {
+  width: 24px !important;
+  min-width: 24px !important;
+  max-width: 24px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  color: var(--sj-code-edit-label-text) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-actions button:hover,
+#sb-main .cm-content >
+.sb-line-fenced-code .sb-code-copy-button:hover {
+  border-color: var(--sj-code-edit-label-border) !important;
+  background: var(--sj-code-edit-button-hover) !important;
+  color: var(--sj-code-edit-rail) !important;
+  transform: none !important;
+}
+
+/* ---------------------------------------------------------
+   3. Closing fence: the real line draws the bottom shell
+   Fixes the old inset pseudo-element corner / border seam.
+   --------------------------------------------------------- */
+
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:not(:has(
+  .sb-code-info,
+  .sb-actions
+)) {
+  min-height: 9px !important;
+  height: 9px !important;
+  max-height: 9px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-top: 0 !important;
+  border-right: 1px solid var(--sj-code-edit-outline) !important;
+  border-bottom: 1px solid var(--sj-code-edit-outline) !important;
+  border-left: 3px solid var(--sj-code-edit-rail) !important;
+  border-radius: 0 0 9px 9px !important;
+  background: var(--sj-code-edit-surface) !important;
+  background-color: var(--sj-code-edit-surface) !important;
+  background-image: none !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Remove the older inset pseudo bottom shell. */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:not(:has(
+  .sb-code-info,
+  .sb-actions
+))::before,
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code:not(:has(
+  .sb-code-info,
+  .sb-actions
+))::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Opening / closing Markdown fences remain visually hidden. */
+#sb-main .cm-content >
+.sb-line-code-outside.sb-line-fenced-code .sb-meta {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Syntax tokens remain transparent to the shared code surface. */
+#sb-main .cm-content >
+.sb-line-fenced-code :is(
+  .sb-code,
+  .sb-string,
+  .sb-string2,
+  .sb-number,
+  .sb-keyword,
+  .sb-variableName,
+  .sb-typeName,
+  .sb-comment,
+  .sb-operator,
+  .sb-propertyName,
+  .sb-atom
+) {
+  background: transparent !important;
+}
+
+@media (max-width: 760px) {
+  #sb-main .cm-content > .sb-line-fenced-code {
+    padding-right: .68rem !important;
+    padding-left: .76rem !important;
+  }
+
+  #sb-main .cm-content >
+  .sb-line-code-outside.sb-line-fenced-code:has(
+    .sb-code-info,
+    .sb-actions
+  )::after {
+    left: .5rem !important;
+  }
+
+  #sb-main .cm-content >
+  .sb-line-code-outside.sb-line-fenced-code:has(
+    .sb-code-info,
+    .sb-actions
+  ) .sb-code-info {
+    max-width: 38vw !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}
+```
+
+
+---
+
+## 🌌 34｜v1.8.75 空之星图引用块
+
+引用块改造成与 Frontmatter、编辑态代码块明显不同的「空之星图 / 航路档案」：
+
+- 使用珍珠白、星雾紫、天青与导航金；
+- 顶部加入 `CELESTIAL ATLAS / VOYAGE NOTE` 星图铭牌；
+- 首尾加入星点、航线、坐标刻度和不对称角标；
+- 多行引用仍保持一张连续卡片，不出现逐行色带；
+- 不对真实 `.cm-line` 使用垂直 margin、负 margin、固定高度或 transform。
+
+```space-style
+/* priority: -220 */
+
+/* =========================================================
+   v1.8.75 CELESTIAL ATLAS QUOTES
+   Star chart · Air route · Fantasy travel archive
+
+   Geometry safety:
+   - no vertical margin on real CodeMirror lines;
+   - no negative margin between adjacent quote lines;
+   - no transform / fixed height on real quote lines;
+   - block spacing is measurable transparent border + padding;
+   - all ornate layers are pseudo-elements with pointer-events:none.
+   ========================================================= */
+
+html {
+  --sj-atlas-quote-surface:
+    linear-gradient(
+      100deg,
+      rgba(253, 252, 255, .99) 0%,
+      rgba(247, 244, 255, .98) 46%,
+      rgba(239, 249, 255, .98) 100%
+    );
+  --sj-atlas-quote-surface-hover:
+    linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(248, 245, 255, 1) 46%,
+      rgba(236, 249, 255, 1) 100%
+    );
+  --sj-atlas-quote-border: rgba(105, 96, 170, .28);
+  --sj-atlas-quote-border-strong: rgba(100, 91, 170, .45);
+  --sj-atlas-quote-violet: #7568b4;
+  --sj-atlas-quote-violet-soft: rgba(117, 104, 180, .16);
+  --sj-atlas-quote-cyan: #63b8d2;
+  --sj-atlas-quote-cyan-soft: rgba(99, 184, 210, .17);
+  --sj-atlas-quote-gold: #d0a85d;
+  --sj-atlas-quote-gold-soft: rgba(208, 168, 93, .22);
+  --sj-atlas-quote-ink: #4e5f7d;
+  --sj-atlas-quote-label: #5d568e;
+  --sj-atlas-quote-shadow:
+    0 18px 38px rgba(71, 78, 139, .10),
+    0 3px 10px rgba(80, 151, 184, .06);
+}
+
+html[data-theme="dark"] {
+  --sj-atlas-quote-surface:
+    linear-gradient(
+      100deg,
+      rgba(31, 29, 58, .99) 0%,
+      rgba(23, 28, 53, .99) 48%,
+      rgba(13, 40, 57, .98) 100%
+    );
+  --sj-atlas-quote-surface-hover:
+    linear-gradient(
+      100deg,
+      rgba(36, 33, 67, 1) 0%,
+      rgba(27, 33, 61, 1) 48%,
+      rgba(15, 45, 63, 1) 100%
+    );
+  --sj-atlas-quote-border: rgba(158, 146, 224, .27);
+  --sj-atlas-quote-border-strong: rgba(169, 157, 235, .48);
+  --sj-atlas-quote-violet: #a89be7;
+  --sj-atlas-quote-violet-soft: rgba(168, 155, 231, .17);
+  --sj-atlas-quote-cyan: #80d0e5;
+  --sj-atlas-quote-cyan-soft: rgba(128, 208, 229, .16);
+  --sj-atlas-quote-gold: #e1bd72;
+  --sj-atlas-quote-gold-soft: rgba(225, 189, 114, .21);
+  --sj-atlas-quote-ink: #d2d5ed;
+  --sj-atlas-quote-label: #c0b6f3;
+  --sj-atlas-quote-shadow:
+    0 20px 44px rgba(0, 0, 0, .24),
+    0 4px 14px rgba(16, 80, 103, .14);
+}
+
+/* =========================================================
+   A. Rendered / preview blockquotes
+   ========================================================= */
+
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote {
+  position: relative !important;
+  isolation: isolate !important;
+  box-sizing: border-box !important;
+  margin: 1.15rem 0 !important;
+  padding: 3.15rem 1.45rem 1.35rem 2.55rem !important;
+  overflow: hidden !important;
+  border: 1px solid var(--sj-atlas-quote-border) !important;
+  border-radius: 21px 9px 21px 9px !important;
+  background:
+    /* upper-right constellation stars */
+    radial-gradient(circle at 77% 17%, var(--sj-atlas-quote-gold) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 84% 9%, var(--sj-atlas-quote-cyan) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 92% 20%, var(--sj-atlas-quote-violet) 0 1.2px, transparent 1.8px),
+    /* constellation connections */
+    linear-gradient(20deg, transparent 0 76%, var(--sj-atlas-quote-cyan-soft) 76% 76.35%, transparent 76.35% 100%),
+    linear-gradient(-24deg, transparent 0 82%, var(--sj-atlas-quote-violet-soft) 82% 82.35%, transparent 82.35% 100%),
+    /* lower horizon glow */
+    radial-gradient(ellipse at 92% 118%, var(--sj-atlas-quote-cyan-soft), transparent 48%),
+    radial-gradient(ellipse at 6% 108%, var(--sj-atlas-quote-violet-soft), transparent 42%),
+    /* double route spine */
+    linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-violet) 0 3px,
+      var(--sj-atlas-quote-gold) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-atlas-quote-surface) !important;
+  color: var(--sj-atlas-quote-ink) !important;
+  line-height: 1.76 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .46),
+    inset 7px 0 22px rgba(117, 104, 180, .06),
+    var(--sj-atlas-quote-shadow) !important;
+  transition:
+    border-color .22s ease,
+    box-shadow .22s ease,
+    filter .22s ease !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote:hover,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote:hover {
+  border-color: var(--sj-atlas-quote-border-strong) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .56),
+    inset 7px 0 24px rgba(117, 104, 180, .08),
+    0 22px 46px rgba(71, 78, 139, .13) !important;
+  filter: saturate(1.035) !important;
+}
+
+/* Celestial atlas title plate. */
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote::before,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote::before {
+  content: "✦  CELESTIAL ATLAS  /  VOYAGE NOTE" !important;
+  position: absolute !important;
+  left: 1.22rem !important;
+  top: .78rem !important;
+  z-index: 2 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 22px !important;
+  padding: 0 .78rem !important;
+  border: 1px solid var(--sj-atlas-quote-border) !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-violet-soft),
+      rgba(255, 255, 255, .22),
+      var(--sj-atlas-quote-cyan-soft)
+    ) !important;
+  color: var(--sj-atlas-quote-label) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .58rem !important;
+  font-weight: 820 !important;
+  line-height: 1 !important;
+  letter-spacing: .115em !important;
+  text-transform: uppercase !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .46),
+    0 4px 12px rgba(91, 86, 153, .08) !important;
+  pointer-events: none !important;
+}
+
+/* Compass / coordinate badge. */
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote::after,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote::after {
+  content: "N 07°  ·  ✦  ·  ↗" !important;
+  position: absolute !important;
+  right: 1.08rem !important;
+  top: .82rem !important;
+  z-index: 2 !important;
+  color: var(--sj-atlas-quote-gold) !important;
+  font-family: var(--sj-code-font) !important;
+  font-size: .56rem !important;
+  font-weight: 760 !important;
+  line-height: 1 !important;
+  letter-spacing: .08em !important;
+  opacity: .92 !important;
+  text-shadow: 0 0 14px var(--sj-atlas-quote-gold-soft) !important;
+  pointer-events: none !important;
+}
+
+/* =========================================================
+   B. CodeMirror live-preview quote lines
+   ========================================================= */
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+) {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+  box-sizing: border-box !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: .34rem 1.28rem .34rem 2.45rem !important;
+  border-top-style: solid !important;
+  border-right-style: solid !important;
+  border-bottom-style: solid !important;
+  border-left-style: solid !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--sj-atlas-quote-ink) !important;
+  text-indent: 0 !important;
+  line-height: 1.76 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* One continuous atlas sheet surface on every explicit quote line. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+)::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  box-sizing: border-box !important;
+  border-top: 0 !important;
+  border-right: 1px solid var(--sj-atlas-quote-border) !important;
+  border-bottom: 0 !important;
+  border-left: 1px solid var(--sj-atlas-quote-border) !important;
+  border-radius: 0 !important;
+  background:
+    linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-violet) 0 3px,
+      var(--sj-atlas-quote-gold) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-atlas-quote-surface) !important;
+  box-shadow:
+    inset 7px 0 20px rgba(117, 104, 180, .055) !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+/* First explicit line: measurable top space + ornate star-chart header. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+) {
+  border-top-width: .55rem !important;
+  padding-top: 2.22rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::before {
+  content: "✦  CELESTIAL ATLAS  /  VOYAGE NOTE" !important;
+  position: absolute !important;
+  left: 1.14rem !important;
+  top: .52rem !important;
+  z-index: 2 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 20px !important;
+  padding: 0 .67rem !important;
+  border: 1px solid var(--sj-atlas-quote-border) !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-violet-soft),
+      rgba(255, 255, 255, .16),
+      var(--sj-atlas-quote-cyan-soft)
+    ) !important;
+  color: var(--sj-atlas-quote-label) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .54rem !important;
+  font-weight: 820 !important;
+  line-height: 1 !important;
+  letter-spacing: .105em !important;
+  text-transform: uppercase !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38) !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::after {
+  border-top: 1px solid var(--sj-atlas-quote-border) !important;
+  border-top-left-radius: 21px !important;
+  border-top-right-radius: 9px !important;
+  background:
+    /* top-left corner bracket */
+    linear-gradient(var(--sj-atlas-quote-gold), var(--sj-atlas-quote-gold)) 13px 12px / 21px 1px no-repeat,
+    linear-gradient(var(--sj-atlas-quote-gold), var(--sj-atlas-quote-gold)) 13px 12px / 1px 11px no-repeat,
+    /* constellation chart */
+    radial-gradient(circle at 78% 34%, var(--sj-atlas-quote-gold) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 86% 18%, var(--sj-atlas-quote-cyan) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 93% 38%, var(--sj-atlas-quote-violet) 0 1.2px, transparent 1.8px),
+    linear-gradient(20deg, transparent 0 76%, var(--sj-atlas-quote-cyan-soft) 76% 76.35%, transparent 76.35% 100%),
+    linear-gradient(-25deg, transparent 0 82%, var(--sj-atlas-quote-violet-soft) 82% 82.35%, transparent 82.35% 100%),
+    /* top coordinate dash */
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-cyan-soft) 0 5px,
+      transparent 5px 10px
+    ) top .77rem right 1.12rem / 4rem 1px no-repeat,
+    /* double route spine */
+    linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-violet) 0 3px,
+      var(--sj-atlas-quote-gold) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-atlas-quote-surface) !important;
+  box-shadow:
+    inset 7px 0 22px rgba(117, 104, 180, .065),
+    0 -8px 22px rgba(71, 78, 139, .05) !important;
+}
+
+/* Last explicit line: measurable tail space + destination marker. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+) {
+  border-bottom-width: .55rem !important;
+  padding-bottom: 1.04rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+)::after {
+  border-bottom: 1px solid var(--sj-atlas-quote-border) !important;
+  border-bottom-right-radius: 21px !important;
+  border-bottom-left-radius: 9px !important;
+  background:
+    /* bottom destination line */
+    linear-gradient(var(--sj-atlas-quote-gold), var(--sj-atlas-quote-gold)) calc(100% - 34px) calc(100% - 12px) / 21px 1px no-repeat,
+    linear-gradient(var(--sj-atlas-quote-gold), var(--sj-atlas-quote-gold)) calc(100% - 13px) calc(100% - 22px) / 1px 11px no-repeat,
+    radial-gradient(circle at calc(100% - 29px) calc(100% - 12px), var(--sj-atlas-quote-gold) 0 2px, transparent 2.5px),
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-violet-soft) 0 6px,
+      transparent 6px 12px
+    ) bottom .72rem right 2.4rem / 4.7rem 1px no-repeat,
+    radial-gradient(ellipse at 90% 120%, var(--sj-atlas-quote-cyan-soft), transparent 48%),
+    linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-violet) 0 3px,
+      var(--sj-atlas-quote-gold) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-atlas-quote-surface) !important;
+  box-shadow:
+    inset 7px 0 22px rgba(117, 104, 180, .065),
+    0 12px 26px rgba(71, 78, 139, .08) !important;
+}
+
+/* Single-line quote: preserve both top and bottom ornaments. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+)::after {
+  border-top: 1px solid var(--sj-atlas-quote-border) !important;
+  border-bottom: 1px solid var(--sj-atlas-quote-border) !important;
+  border-radius: 21px 9px 21px 9px !important;
+  background:
+    linear-gradient(var(--sj-atlas-quote-gold), var(--sj-atlas-quote-gold)) 13px 12px / 21px 1px no-repeat,
+    linear-gradient(var(--sj-atlas-quote-gold), var(--sj-atlas-quote-gold)) 13px 12px / 1px 11px no-repeat,
+    radial-gradient(circle at 78% 25%, var(--sj-atlas-quote-gold) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 86% 14%, var(--sj-atlas-quote-cyan) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 93% 28%, var(--sj-atlas-quote-violet) 0 1.2px, transparent 1.8px),
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-cyan-soft) 0 5px,
+      transparent 5px 10px
+    ) top .77rem right 1.12rem / 4rem 1px no-repeat,
+    linear-gradient(var(--sj-atlas-quote-gold), var(--sj-atlas-quote-gold)) calc(100% - 34px) calc(100% - 12px) / 21px 1px no-repeat,
+    linear-gradient(var(--sj-atlas-quote-gold), var(--sj-atlas-quote-gold)) calc(100% - 13px) calc(100% - 22px) / 1px 11px no-repeat,
+    radial-gradient(circle at calc(100% - 29px) calc(100% - 12px), var(--sj-atlas-quote-gold) 0 2px, transparent 2.5px),
+    linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-violet) 0 3px,
+      var(--sj-atlas-quote-gold) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-atlas-quote-surface) !important;
+  box-shadow:
+    inset 7px 0 22px rgba(117, 104, 180, .065),
+    var(--sj-atlas-quote-shadow) !important;
+}
+
+/* Active quote lines must not form a separate horizontal band. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+) {
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+)::after {
+  filter: saturate(1.025) brightness(1.012) !important;
+}
+
+/* Hide any old quote-card surface owned by an inner wrapper. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line > :is(
+  blockquote,
+  .sb-blockquote,
+  .sb-blockquote-outside
+) {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+@media (max-width: 760px) {
+  #sb-main:not(:has(.sky-dashboard))
+  :not(.cm-editor) > blockquote,
+  #sb-main:not(:has(.sky-dashboard))
+  :not(.cm-editor) > .sb-blockquote {
+    padding: 2.95rem .98rem 1.18rem 1.48rem !important;
+    border-radius: 17px 8px 17px 8px !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard))
+  :not(.cm-editor) > blockquote::before,
+  #sb-main:not(:has(.sky-dashboard))
+  :not(.cm-editor) > .sb-blockquote::before {
+    left: .78rem !important;
+    max-width: calc(100% - 5.7rem) !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: .53rem !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard))
+  :not(.cm-editor) > blockquote::after,
+  #sb-main:not(:has(.sky-dashboard))
+  :not(.cm-editor) > .sb-blockquote::after {
+    right: .72rem !important;
+    font-size: .50rem !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard)) .cm-editor
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  ) {
+    padding-right: .88rem !important;
+    padding-left: 1.58rem !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard)) .cm-editor
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  ):not(
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  ) {
+    padding-top: 2.05rem !important;
+  }
+
+  #sb-main:not(:has(.sky-dashboard)) .cm-editor
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  ):not(
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )::before {
+    left: .74rem !important;
+    max-width: calc(100% - 5.3rem) !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: .50rem !important;
+  }
+}
+```
+
+
+---
+---
+title: SJ Celestial Atlas Corner Balance Patch v1.8.76
+tags:
+  - space-style
+---
+
+```space-style
+/* priority: -260 */
+
+/* =========================================================
+   SJ Celestial Atlas Quote Patch v1.8.76
+   Refine the top-left corner so the atlas header feels cleaner
+   and better balanced in multi-line editor quotes.
+   ========================================================= */
+
+/* ------------------------------
+   Rendered blockquotes
+   ------------------------------ */
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote {
+  padding-left: 3.15rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote::before,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote::before {
+  left: 1.28rem !important;
+  top: .86rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote::after,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote::after {
+  right: 1.14rem !important;
+  top: .86rem !important;
+}
+
+/* ------------------------------
+   Editor quote first line geometry
+   ------------------------------ */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+) {
+  padding-top: 2.08rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::before {
+  left: 1.28rem !important;
+  top: .58rem !important;
+  padding: 0 .72rem !important;
+}
+
+/*
+  The earlier design used a hard corner bracket and a diagonal line that
+  visually intersected the title plate, making the upper-left corner feel
+  cramped. Replace that with a softer atlas glow plus guide lines that
+  start after the label, keeping the ornate look without the awkward knot.
+*/
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::after {
+  border-top-left-radius: 22px !important;
+  background:
+    /* soft top-left aurora glow */
+    radial-gradient(circle at 10% 2%, rgba(162, 138, 214, .18), transparent 22%),
+    /* label continuation guide */
+    linear-gradient(90deg, var(--sj-atlas-quote-violet-soft), transparent) top 1.06rem left 12.6rem / 8.2rem 1px no-repeat,
+    /* constellation field kept on the right side */
+    radial-gradient(circle at 78% 34%, var(--sj-atlas-quote-gold) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 86% 18%, var(--sj-atlas-quote-cyan) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 93% 38%, var(--sj-atlas-quote-violet) 0 1.2px, transparent 1.8px),
+    /* gentler upper sky-route, shifted right so it won't cut through the title */
+    linear-gradient(18deg, transparent 0 76%, var(--sj-atlas-quote-cyan-soft) 76% 76.35%, transparent 76.35% 100%) top -4px right 0 / 62% 112px no-repeat,
+    /* top coordinate dash */
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-cyan-soft) 0 5px,
+      transparent 5px 10px
+    ) top .77rem right 1.12rem / 4rem 1px no-repeat,
+    /* double route spine */
+    linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-violet) 0 3px,
+      var(--sj-atlas-quote-gold) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-atlas-quote-surface) !important;
+  box-shadow:
+    inset 7px 0 22px rgba(117, 104, 180, .065),
+    0 -8px 22px rgba(71, 78, 139, .05) !important;
+}
+
+/* Also rebalance the rendered version's decorative field. */
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote {
+  background:
+    radial-gradient(circle at 10% 2%, rgba(162, 138, 214, .16), transparent 20%),
+    linear-gradient(90deg, var(--sj-atlas-quote-violet-soft), transparent) top 1.32rem left 13.2rem / 8.8rem 1px no-repeat,
+    radial-gradient(circle at 78% 34%, var(--sj-atlas-quote-gold) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 86% 18%, var(--sj-atlas-quote-cyan) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 93% 38%, var(--sj-atlas-quote-violet) 0 1.2px, transparent 1.8px),
+    linear-gradient(18deg, transparent 0 76%, var(--sj-atlas-quote-cyan-soft) 76% 76.35%, transparent 76.35% 100%) top -2px right 0 / 62% 118px no-repeat,
+    repeating-linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-cyan-soft) 0 5px,
+      transparent 5px 10px
+    ) top 1.06rem right 1.12rem / 4rem 1px no-repeat,
+    linear-gradient(
+      90deg,
+      var(--sj-atlas-quote-violet) 0 3px,
+      var(--sj-atlas-quote-gold) 3px 4px,
+      transparent 4px
+    ),
+    var(--sj-atlas-quote-surface) !important;
+}
+```
+
+
+---
+---
+title: SJ Ivory Astral Quote Patch v1.8.77
+tags:
+  - space-style
+---
+
+```space-style
+/* priority: -280 */
+
+/* =========================================================
+   SJ v1.8.77 — Ivory Astral Quote System
+   典雅白金 + 幻想星图风引用块
+   Geometry-safe for CodeMirror
+   ========================================================= */
+
+:root {
+  --sj-ivory-quote-surface:
+    linear-gradient(
+      135deg,
+      rgba(255, 252, 247, .98) 0%,
+      rgba(251, 248, 242, .985) 36%,
+      rgba(247, 249, 252, .985) 70%,
+      rgba(242, 247, 252, .985) 100%
+    );
+  --sj-ivory-quote-surface-soft:
+    linear-gradient(
+      180deg,
+      rgba(255, 252, 248, .94),
+      rgba(250, 246, 239, .90)
+    );
+  --sj-ivory-quote-border: rgba(194, 169, 112, .46);
+  --sj-ivory-quote-border-strong: rgba(187, 154, 90, .62);
+  --sj-ivory-quote-ink: #5f6676;
+  --sj-ivory-quote-ink-strong: #495269;
+  --sj-ivory-quote-label: #75678e;
+  --sj-ivory-quote-gold: #c89d4d;
+  --sj-ivory-quote-gold-soft: rgba(200, 157, 77, .22);
+  --sj-ivory-quote-violet: #8e86b9;
+  --sj-ivory-quote-violet-soft: rgba(142, 134, 185, .16);
+  --sj-ivory-quote-cyan: #8cb9d8;
+  --sj-ivory-quote-cyan-soft: rgba(140, 185, 216, .18);
+  --sj-ivory-quote-shadow: 0 14px 34px rgba(126, 122, 154, .08);
+}
+
+html[data-theme="dark"] {
+  --sj-ivory-quote-surface:
+    linear-gradient(
+      135deg,
+      rgba(28, 31, 43, .97) 0%,
+      rgba(34, 36, 49, .97) 38%,
+      rgba(20, 27, 38, .97) 100%
+    );
+  --sj-ivory-quote-surface-soft:
+    linear-gradient(
+      180deg,
+      rgba(43, 41, 51, .88),
+      rgba(30, 35, 48, .84)
+    );
+  --sj-ivory-quote-border: rgba(212, 185, 126, .28);
+  --sj-ivory-quote-border-strong: rgba(233, 203, 140, .44);
+  --sj-ivory-quote-ink: #d5d8e5;
+  --sj-ivory-quote-ink-strong: #edf1fb;
+  --sj-ivory-quote-label: #d6caef;
+  --sj-ivory-quote-gold: #e2bf78;
+  --sj-ivory-quote-gold-soft: rgba(226, 191, 120, .20);
+  --sj-ivory-quote-violet: #b3a8e0;
+  --sj-ivory-quote-violet-soft: rgba(179, 168, 224, .14);
+  --sj-ivory-quote-cyan: #9bc9e8;
+  --sj-ivory-quote-cyan-soft: rgba(155, 201, 232, .14);
+  --sj-ivory-quote-shadow: 0 16px 38px rgba(0, 0, 0, .22);
+}
+
+/* =========================================================
+   A. Rendered blockquotes
+   ========================================================= */
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote {
+  position: relative;
+  box-sizing: border-box;
+  margin: 1.12rem 0 !important;
+  padding: 3rem 1.35rem 1.25rem 3.3rem !important;
+  border: 1px solid var(--sj-ivory-quote-border) !important;
+  border-radius: 22px !important;
+  background:
+    radial-gradient(circle at 10% 14%, rgba(255, 255, 255, .70), transparent 22%),
+    radial-gradient(circle at 89% 18%, var(--sj-ivory-quote-cyan-soft), transparent 20%),
+    radial-gradient(circle at 84% 82%, rgba(255, 255, 255, .34), transparent 24%),
+    linear-gradient(90deg, rgba(255,255,255,.58), rgba(255,255,255,0) 22%),
+    var(--sj-ivory-quote-surface) !important;
+  color: var(--sj-ivory-quote-ink) !important;
+  line-height: 1.76;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 0 0 1px rgba(255,255,255,.20),
+    var(--sj-ivory-quote-shadow) !important;
+  overflow: hidden !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote::before,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote::before {
+  content: "✦  ASTRAL ARCHIVE  /  VOYAGE NOTE" !important;
+  position: absolute !important;
+  left: 1.28rem !important;
+  top: .84rem !important;
+  z-index: 3 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 24px !important;
+  padding: 0 .88rem !important;
+  border: 1px solid rgba(195, 174, 130, .48) !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.72), rgba(250,244,233,.92), rgba(245,248,255,.76)) !important;
+  color: var(--sj-ivory-quote-label) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .60rem !important;
+  font-weight: 820 !important;
+  line-height: 1 !important;
+  letter-spacing: .11em !important;
+  text-transform: uppercase !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.74),
+    0 6px 18px rgba(165, 155, 176, .10) !important;
+  pointer-events: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > blockquote::after,
+#sb-main:not(:has(.sky-dashboard))
+:not(.cm-editor) > .sb-blockquote::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+  background:
+    /* left illuminated spine */
+    linear-gradient(180deg, rgba(141,132,187,.90), rgba(200,157,77,.84)) left 0 top 0 / 4px 100% no-repeat,
+    linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0)) left 4px top 0 / 1px 100% no-repeat,
+    /* top header continuation line */
+    linear-gradient(90deg, rgba(142,134,185,.18), rgba(140,185,216,.14), transparent) left 13rem top 1.15rem / 12rem 1px no-repeat,
+    /* star field */
+    radial-gradient(circle at 79% 14%, var(--sj-ivory-quote-gold) 0 1.8px, transparent 2px),
+    radial-gradient(circle at 87.5% 11.5%, var(--sj-ivory-quote-cyan) 0 1.5px, transparent 1.9px),
+    radial-gradient(circle at 94% 17%, var(--sj-ivory-quote-violet) 0 1.45px, transparent 1.9px),
+    /* celestial connector */
+    linear-gradient(18deg, transparent 0 79%, rgba(140,185,216,.35) 79% 79.35%, transparent 79.35% 100%) top -8px right 0 / 44% 118px no-repeat,
+    /* right-side coordinate dashes */
+    repeating-linear-gradient(90deg, rgba(140,185,216,.36) 0 5px, transparent 5px 11px) top 1.03rem right 1.18rem / 4.8rem 1px no-repeat,
+    /* corner filigree */
+    radial-gradient(circle at 97% 93%, var(--sj-ivory-quote-gold) 0 3px, transparent 3.5px) bottom .92rem right 1.06rem / auto auto no-repeat,
+    linear-gradient(var(--sj-ivory-quote-gold), var(--sj-ivory-quote-gold)) bottom 1.02rem right 1.52rem / 2.55rem 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(140,185,216,.24) 0 6px, transparent 6px 12px) bottom 1.10rem right 4.1rem / 5rem 1px no-repeat,
+    linear-gradient(var(--sj-ivory-quote-gold), var(--sj-ivory-quote-gold)) bottom 1.42rem right .92rem / 1px 18px no-repeat !important;
+}
+
+/* =========================================================
+   B. CodeMirror live-preview quote lines
+   ========================================================= */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+) {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+  box-sizing: border-box !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: .34rem 1.35rem .34rem 3.15rem !important;
+  border: 0 solid transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--sj-ivory-quote-ink) !important;
+  text-indent: 0 !important;
+  line-height: 1.76 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Neutralize nested wrappers so only explicit quote lines paint the card */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line > :is(
+  blockquote,
+  .sb-blockquote,
+  .sb-blockquote-outside
+) {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}
+
+/* Unified body sheet: every explicit line shares one continuous body */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+)::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  box-sizing: border-box !important;
+  border-right: 1px solid var(--sj-ivory-quote-border) !important;
+  border-left: 1px solid var(--sj-ivory-quote-border) !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-radius: 0 !important;
+  background:
+    radial-gradient(circle at 10% 12%, rgba(255, 255, 255, .64), transparent 22%),
+    linear-gradient(90deg, rgba(255,255,255,.50), rgba(255,255,255,0) 22%),
+    var(--sj-ivory-quote-surface) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.42),
+    inset 0 0 0 1px rgba(255,255,255,.12) !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+/* First explicit line: measurable header space and ornate overlay */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+) {
+  border-top-width: .78rem !important;
+  padding-top: 2.26rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::before {
+  content: "✦  ASTRAL ARCHIVE  /  VOYAGE NOTE" !important;
+  position: absolute !important;
+  left: 1.30rem !important;
+  top: .62rem !important;
+  z-index: 3 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 22px !important;
+  padding: 0 .78rem !important;
+  border: 1px solid rgba(195, 174, 130, .42) !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.68), rgba(249,243,232,.90), rgba(246,248,253,.74)) !important;
+  color: var(--sj-ivory-quote-label) !important;
+  font-family: var(--sj-ui-font) !important;
+  font-size: .56rem !important;
+  font-weight: 820 !important;
+  line-height: 1 !important;
+  letter-spacing: .105em !important;
+  text-transform: uppercase !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.60),
+    0 4px 14px rgba(160, 148, 176, .08) !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::after {
+  border-top: 1px solid var(--sj-ivory-quote-border) !important;
+  border-top-left-radius: 22px !important;
+  border-top-right-radius: 12px !important;
+  background:
+    radial-gradient(circle at 10% 14%, rgba(255,255,255,.74), transparent 22%),
+    radial-gradient(circle at 89% 18%, var(--sj-ivory-quote-cyan-soft), transparent 20%),
+    linear-gradient(90deg, rgba(255,255,255,.52), rgba(255,255,255,0) 22%),
+    /* illuminated spine */
+    linear-gradient(180deg, rgba(141,132,187,.90), rgba(200,157,77,.84)) left 0 top 0 / 4px 100% no-repeat,
+    linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0)) left 4px top 0 / 1px 100% no-repeat,
+    /* title continuation guide */
+    linear-gradient(90deg, rgba(142,134,185,.18), rgba(140,185,216,.14), transparent) left 12.7rem top 1.16rem / 12rem 1px no-repeat,
+    /* star chart */
+    radial-gradient(circle at 79% 14%, var(--sj-ivory-quote-gold) 0 1.7px, transparent 2px),
+    radial-gradient(circle at 87.5% 11.5%, var(--sj-ivory-quote-cyan) 0 1.45px, transparent 1.9px),
+    radial-gradient(circle at 94% 17%, var(--sj-ivory-quote-violet) 0 1.4px, transparent 1.9px),
+    linear-gradient(18deg, transparent 0 79%, rgba(140,185,216,.34) 79% 79.35%, transparent 79.35% 100%) top -8px right 0 / 44% 118px no-repeat,
+    repeating-linear-gradient(90deg, rgba(140,185,216,.34) 0 5px, transparent 5px 11px) top 1.03rem right 1.18rem / 4.8rem 1px no-repeat,
+    var(--sj-ivory-quote-surface) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.58),
+    inset 0 0 0 1px rgba(255,255,255,.12) !important;
+}
+
+/* Last explicit line: measurable tail space and destination motif */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+) {
+  border-bottom-width: .78rem !important;
+  padding-bottom: 1.02rem !important;
+}
+
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+)::after {
+  border-bottom: 1px solid var(--sj-ivory-quote-border) !important;
+  border-bottom-left-radius: 16px !important;
+  border-bottom-right-radius: 24px !important;
+  background:
+    radial-gradient(circle at 10% 12%, rgba(255,255,255,.64), transparent 22%),
+    linear-gradient(90deg, rgba(255,255,255,.50), rgba(255,255,255,0) 22%),
+    /* illuminated spine */
+    linear-gradient(180deg, rgba(141,132,187,.90), rgba(200,157,77,.84)) left 0 top 0 / 4px 100% no-repeat,
+    linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0)) left 4px top 0 / 1px 100% no-repeat,
+    /* bottom destination motif */
+    radial-gradient(circle at calc(100% - 1.05rem) calc(100% - .96rem), var(--sj-ivory-quote-gold) 0 3px, transparent 3.4px),
+    linear-gradient(var(--sj-ivory-quote-gold), var(--sj-ivory-quote-gold)) bottom 1.06rem right 1.52rem / 2.55rem 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(140,185,216,.24) 0 6px, transparent 6px 12px) bottom 1.14rem right 4.05rem / 5rem 1px no-repeat,
+    linear-gradient(var(--sj-ivory-quote-gold), var(--sj-ivory-quote-gold)) bottom 1.46rem right .92rem / 1px 18px no-repeat,
+    var(--sj-ivory-quote-surface) !important;
+}
+
+/* Keep active line visually integrated instead of striping one row */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+) {
+  background: transparent !important;
+}
+```
+
+
+---
+---
+title: SJ Seamless Ivory Astral Quote Patch v1.8.78
+tags:
+  - space-style
+---
+
+```space-style
+/* priority: -320 */
+
+/* =========================================================
+   SJ v1.8.78 — Seamless Ivory Astral Quotes
+   白金幻想引用块：多行连续表面修复
+   Geometry-safe for CodeMirror
+   ========================================================= */
+
+:root {
+  /*
+   * Use a horizontal-only sheet. It is intentionally free of vertical
+   * gradients, per-line highlights, and inset top rules, so every quoted
+   * CodeMirror line joins into one visually continuous surface.
+   */
+  --sj-ivory-quote-sheet:
+    linear-gradient(
+      90deg,
+      rgba(255, 252, 247, .985) 0%,
+      rgba(252, 249, 243, .985) 38%,
+      rgba(248, 249, 251, .985) 68%,
+      rgba(243, 248, 252, .985) 100%
+    );
+}
+
+html[data-theme="dark"] {
+  --sj-ivory-quote-sheet:
+    linear-gradient(
+      90deg,
+      rgba(34, 35, 45, .985) 0%,
+      rgba(30, 34, 45, .985) 45%,
+      rgba(20, 29, 40, .985) 100%
+    );
+}
+
+/* =========================================================
+   A. Shared editor quote sheet
+   ========================================================= */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+)::after {
+  border-right: 1px solid var(--sj-ivory-quote-border) !important;
+  border-left: 1px solid var(--sj-ivory-quote-border) !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-radius: 0 !important;
+  background:
+    /* continuous illuminated route spine */
+    linear-gradient(
+      180deg,
+      rgba(141, 132, 187, .90),
+      rgba(200, 157, 77, .84)
+    ) left 0 top 0 / 4px 100% no-repeat,
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, .48),
+      rgba(255, 255, 255, .08)
+    ) left 4px top 0 / 1px 100% no-repeat,
+    /* one identical surface for every explicit quote line */
+    var(--sj-ivory-quote-sheet) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Remove any active-line stripe from both SilverBullet and CodeMirror. */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+),
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+.cm-line.cm-activeLine:is(
+  .sb-blockquote-outside,
+  :has(> .sb-blockquote-outside)
+)::after {
+  background-color: transparent !important;
+  filter: none !important;
+}
+
+/* =========================================================
+   B. First line — ornament only; base sheet stays identical
+   ========================================================= */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+)::after {
+  border-top: 1px solid var(--sj-ivory-quote-border) !important;
+  border-top-left-radius: 22px !important;
+  border-top-right-radius: 12px !important;
+  background:
+    /* continuous spine */
+    linear-gradient(
+      180deg,
+      rgba(141, 132, 187, .90),
+      rgba(200, 157, 77, .84)
+    ) left 0 top 0 / 4px 100% no-repeat,
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, .48),
+      rgba(255, 255, 255, .08)
+    ) left 4px top 0 / 1px 100% no-repeat,
+    /* label continuation guide */
+    linear-gradient(
+      90deg,
+      rgba(142, 134, 185, .18),
+      rgba(140, 185, 216, .14),
+      transparent
+    ) left 12.7rem top 1.16rem / 12rem 1px no-repeat,
+    /* restrained celestial chart */
+    radial-gradient(
+      circle at 79% 14%,
+      var(--sj-ivory-quote-gold) 0 1.7px,
+      transparent 2px
+    ),
+    radial-gradient(
+      circle at 87.5% 11.5%,
+      var(--sj-ivory-quote-cyan) 0 1.45px,
+      transparent 1.9px
+    ),
+    radial-gradient(
+      circle at 94% 17%,
+      var(--sj-ivory-quote-violet) 0 1.4px,
+      transparent 1.9px
+    ),
+    linear-gradient(
+      18deg,
+      transparent 0 79%,
+      rgba(140, 185, 216, .34) 79% 79.35%,
+      transparent 79.35% 100%
+    ) top -8px right 0 / 44% 118px no-repeat,
+    repeating-linear-gradient(
+      90deg,
+      rgba(140, 185, 216, .34) 0 5px,
+      transparent 5px 11px
+    ) top 1.03rem right 1.18rem / 4.8rem 1px no-repeat,
+    /* identical base sheet */
+    var(--sj-ivory-quote-sheet) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .62),
+    0 -7px 22px rgba(139, 130, 162, .055) !important;
+}
+
+/* =========================================================
+   C. Last line — destination ornament only
+   ========================================================= */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+)::after {
+  border-bottom: 1px solid var(--sj-ivory-quote-border) !important;
+  border-bottom-left-radius: 16px !important;
+  border-bottom-right-radius: 24px !important;
+  background:
+    /* continuous spine */
+    linear-gradient(
+      180deg,
+      rgba(141, 132, 187, .90),
+      rgba(200, 157, 77, .84)
+    ) left 0 top 0 / 4px 100% no-repeat,
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, .48),
+      rgba(255, 255, 255, .08)
+    ) left 4px top 0 / 1px 100% no-repeat,
+    /* destination motif */
+    radial-gradient(
+      circle at calc(100% - 1.05rem) calc(100% - .96rem),
+      var(--sj-ivory-quote-gold) 0 3px,
+      transparent 3.4px
+    ),
+    linear-gradient(
+      var(--sj-ivory-quote-gold),
+      var(--sj-ivory-quote-gold)
+    ) bottom 1.06rem right 1.52rem / 2.55rem 1px no-repeat,
+    repeating-linear-gradient(
+      90deg,
+      rgba(140, 185, 216, .24) 0 6px,
+      transparent 6px 12px
+    ) bottom 1.14rem right 4.05rem / 5rem 1px no-repeat,
+    linear-gradient(
+      var(--sj-ivory-quote-gold),
+      var(--sj-ivory-quote-gold)
+    ) bottom 1.46rem right .92rem / 1px 18px no-repeat,
+    /* identical base sheet */
+    var(--sj-ivory-quote-sheet) !important;
+  box-shadow: 0 14px 30px rgba(126, 122, 154, .075) !important;
+}
+
+/* =========================================================
+   D. Single-line quote — combine head and tail ornaments
+   ========================================================= */
+#sb-main:not(:has(.sky-dashboard)) .cm-editor
+:where(
+  .cm-line.sb-blockquote-outside,
+  .cm-line:has(> .sb-blockquote-outside)
+):not(
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+  +
+  :where(
+    .cm-line.sb-blockquote-outside,
+    .cm-line:has(> .sb-blockquote-outside)
+  )
+):not(
+  :has(
+    +
+    :where(
+      .cm-line.sb-blockquote-outside,
+      .cm-line:has(> .sb-blockquote-outside)
+    )
+  )
+)::after {
+  border-top: 1px solid var(--sj-ivory-quote-border) !important;
+  border-bottom: 1px solid var(--sj-ivory-quote-border) !important;
+  border-radius: 22px 12px 24px 16px !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(141, 132, 187, .90),
+      rgba(200, 157, 77, .84)
+    ) left 0 top 0 / 4px 100% no-repeat,
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, .48),
+      rgba(255, 255, 255, .08)
+    ) left 4px top 0 / 1px 100% no-repeat,
+    linear-gradient(
+      90deg,
+      rgba(142, 134, 185, .18),
+      rgba(140, 185, 216, .14),
+      transparent
+    ) left 12.7rem top 1.16rem / 12rem 1px no-repeat,
+    radial-gradient(circle at 79% 14%, var(--sj-ivory-quote-gold) 0 1.7px, transparent 2px),
+    radial-gradient(circle at 87.5% 11.5%, var(--sj-ivory-quote-cyan) 0 1.45px, transparent 1.9px),
+    radial-gradient(circle at 94% 17%, var(--sj-ivory-quote-violet) 0 1.4px, transparent 1.9px),
+    repeating-linear-gradient(
+      90deg,
+      rgba(140, 185, 216, .34) 0 5px,
+      transparent 5px 11px
+    ) top 1.03rem right 1.18rem / 4.8rem 1px no-repeat,
+    radial-gradient(
+      circle at calc(100% - 1.05rem) calc(100% - .96rem),
+      var(--sj-ivory-quote-gold) 0 3px,
+      transparent 3.4px
+    ),
+    linear-gradient(var(--sj-ivory-quote-gold), var(--sj-ivory-quote-gold)) bottom 1.06rem right 1.52rem / 2.55rem 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(140,185,216,.24) 0 6px, transparent 6px 12px) bottom 1.14rem right 4.05rem / 5rem 1px no-repeat,
+    linear-gradient(var(--sj-ivory-quote-gold), var(--sj-ivory-quote-gold)) bottom 1.46rem right .92rem / 1px 18px no-repeat,
+    var(--sj-ivory-quote-sheet) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.62),
+    0 14px 30px rgba(126,122,154,.075) !important;
+}
 ```
